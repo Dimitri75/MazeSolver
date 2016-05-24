@@ -5,6 +5,7 @@ import element.Location;
 import element.MapElement;
 import enumerations.*;
 import graph.Graph;
+import graph.MazeGenerator;
 import graph.Vertex;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -45,7 +46,6 @@ public class Controller {
     private Thread romeoThread, julietteThread;
     private CircularQueue<Vertex> path;
     private List<Rectangle> markedLocations = new ArrayList<>();
-    private List<MapElement> obstaclesList = new ArrayList<>();
     private static LinkedList<Rectangle> locationsToMark = new LinkedList<>();
 
     public Controller() {
@@ -117,72 +117,8 @@ public class Controller {
         button_start.setFocusTraversable(false);
         PACE = (slider_size.getValue() < 50) ? 50 : (int) slider_size.getValue();
 
-        initObstacles();
-        initRomeoAndJuliette();
         initGraph();
-    }
-
-    /**
-     * Place obstacles around the map according to the size of it
-     */
-    public void initObstacles() {
-        MapElement obstacle;
-        if (obstaclesList != null && !obstaclesList.isEmpty()){
-//            for (MapElement element : obstaclesList) {
-//                anchorPane.getChildren().remove(element.getShape());
-//            }
-//            obstaclesList.clear();
-            return;
-        }
-        else {
-            int maxX = (int) (anchorPane.getPrefWidth() / PACE);
-            int maxY = (int) (anchorPane.getPrefHeight() / PACE) - 1;
-
-            for (int x = 2; x < maxX; x *= 2) {
-                for (int y = 3; y < maxY; y++) {
-                    if (y % x != 0) {
-                        obstacle = new MapElement(x * PACE, y * PACE, PACE, ResourcesUtils.getInstance().getObstacle());
-                        anchorPane.getChildren().add(obstacle.getShape());
-                        obstaclesList.add(obstacle);
-                    }
-                }
-            }
-            for (int y = 2; y < maxY; y *= 2) {
-                for (int x = 3; x < maxX; x++) {
-                    if (x % 5 == 0 || x % 5 == 1) {
-                        obstacle = new MapElement(x * PACE, y * PACE, PACE, ResourcesUtils.getInstance().getObstacle());
-                        anchorPane.getChildren().add(obstacle.getShape());
-                        obstaclesList.add(obstacle);
-                    }
-                }
-            }
-        }
-    }
-
-    @FXML
-    public void setObstacle(MouseEvent e) {
-        if (started && !launched) {
-            MapElement obstacle = null;
-            int x = (int) e.getSceneX() - (int) e.getSceneX() % PACE;
-            int y = (int) e.getSceneY() - (int) e.getSceneY() % PACE;
-
-            if (checkIfNoObstacles(x, y) && checkIfNoCharacters(new Location(x, y), romeo, juliette)) {
-                obstacle = new MapElement(x, y, PACE, ResourcesUtils.getInstance().getObstacle());
-                anchorPane.getChildren().add(obstacle.getShape());
-                obstaclesList.add(obstacle);
-            }
-            else {
-                for (MapElement element : obstaclesList) {
-                    if (element.getX() == x && element.getY() == y) {
-                        obstacle = element;
-                        anchorPane.getChildren().remove(element.getShape());
-                    }
-                }
-                if (obstacle != null)
-                    obstaclesList.remove(obstacle);
-            }
-            initGraph();
-        }
+        initRomeoAndJuliette();
     }
 
     /**
@@ -199,6 +135,7 @@ public class Controller {
             }
         } catch (Exception e) {
             label_error.setText("Bravo ! Maintenant c'est cassé. :(");
+            e.printStackTrace();
         }
     }
 
@@ -234,7 +171,48 @@ public class Controller {
      * Initializes the graph using obstacles and the size of the window
      */
     public void initGraph() {
-        graph = new Graph((int) anchorPane.getWidth(), (int) anchorPane.getHeight(), obstaclesList, PACE);
+        graph = new Graph((int) anchorPane.getWidth(), (int) anchorPane.getHeight(), PACE);
+        initObstacles();
+        graph.init();
+    }
+
+    /**
+     * Place obstacles around the map according to the size of it
+     */
+    public void initObstacles() {
+        MazeGenerator.basicMaze(graph);
+        for (MapElement obstacle : graph.getObstaclesList())
+            anchorPane.getChildren().add(obstacle.getShape());
+    }
+
+    /**
+     * Allow to add or remove obstacles by clicks
+     * @param e
+     */
+    @FXML
+    public void setObstacle(MouseEvent e) {
+        if (started && !launched) {
+            MapElement obstacle = null;
+            int x = (int) e.getSceneX() - (int) e.getSceneX() % PACE;
+            int y = (int) e.getSceneY() - (int) e.getSceneY() % PACE;
+
+            if (checkIfNoObstacles(x, y) && checkIfNoCharacters(new Location(x, y), romeo, juliette)) {
+                obstacle = new MapElement(x, y, PACE, ResourcesUtils.getInstance().getObstacle());
+                anchorPane.getChildren().add(obstacle.getShape());
+                graph.getObstaclesList().add(obstacle);
+            }
+            else {
+                for (MapElement element : graph.getObstaclesList()) {
+                    if (element.getX() == x && element.getY() == y) {
+                        obstacle = element;
+                        anchorPane.getChildren().remove(element.getShape());
+                    }
+                }
+                if (obstacle != null)
+                    graph.getObstaclesList().remove(obstacle);
+            }
+            initGraph();
+        }
     }
 
     /**
@@ -243,11 +221,14 @@ public class Controller {
     public void clearAll() {
         clear();
 
-        for (MapElement obstacle : obstaclesList)
+        for (MapElement obstacle : graph.getObstaclesList())
             anchorPane.getChildren().remove(obstacle.getShape());
-        obstaclesList.clear();
+        graph.getObstaclesList().clear();
     }
 
+    /**
+     * Cancel timers and clean GUI
+     */
     public void clear(){
         clearLocations();
         cancelTimer(timer, timerBrowser, debugTimer);
@@ -265,6 +246,18 @@ public class Controller {
             juliette = null;
         }
     }
+
+    /**
+     * Controls the buttons visibility
+     * @param bool
+     */
+    public void displayButtons(boolean bool){
+        button_start_simpleDijkstra.setVisible(bool);
+        button_start_dijkstraToEachOther.setVisible(bool);
+        button_start_DFS.setVisible(bool);
+        button_start_BFS.setVisible(bool);
+    }
+
     /**
      * Starts simulation where Romeo run the shortest path to the given destination
      * @param destination
@@ -322,21 +315,7 @@ public class Controller {
         }
     }
 
-    public void showAlertNoPathAvailable(){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText("No path available");
-        alert.setContentText("We haven't found a correct path ! Parhaps should you think about removing few obstacles next time. 8)");
-        alert.show();
-    }
 
-    public static void showInstructions(){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText("Romeo & Juliet");
-        alert.setContentText(EnumText.INSTRUCTIONS.toString());
-        alert.show();
-    }
 
     /**
      * Starts simulation where Romeo tries to find Juliette without knowing her exact position
@@ -359,36 +338,6 @@ public class Controller {
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * Cancels both Romeo and Juliette
-     */
-    public void stopMovements(){
-        stopRomeo();
-        stopJuliette();
-    }
-
-    /**
-     * Handles cancelation of Romeo's animations and thread
-     */
-    public void stopRomeo() {
-        cancelTimer(romeoAnimation);
-
-        if (romeoThread != null)
-            romeoThread.interrupt();
-        romeoThread = null;
-    }
-
-    /**
-     * Handles cancelation of Juliette's animations and thread
-     */
-    public void stopJuliette() {
-        cancelTimer(julietteTimer, julietteAnimation);
-
-        if (julietteThread != null)
-            julietteThread.interrupt();
-        julietteThread = null;
     }
 
     /**
@@ -462,6 +411,36 @@ public class Controller {
     }
 
     /**
+     * Cancels both Romeo and Juliette
+     */
+    public void stopMovements(){
+        stopRomeo();
+        stopJuliette();
+    }
+
+    /**
+     * Handles cancelation of Romeo's animations and thread
+     */
+    public void stopRomeo() {
+        cancelTimer(romeoAnimation);
+
+        if (romeoThread != null)
+            romeoThread.interrupt();
+        romeoThread = null;
+    }
+
+    /**
+     * Handles cancelation of Juliette's animations and thread
+     */
+    public void stopJuliette() {
+        cancelTimer(julietteTimer, julietteAnimation);
+
+        if (julietteThread != null)
+            julietteThread.interrupt();
+        julietteThread = null;
+    }
+
+    /**
      * Handle timers cancelations
      * @param timers
      */
@@ -512,17 +491,15 @@ public class Controller {
         return true;
     }
 
-    /**
-     * Returns the vertex between two other vertices
-     * @param v1
-     * @param v2
-     * @return
-     */
-    public Vertex getDestinationBetweenVertexes(Vertex v1, Vertex v2, EnumMode mode){
-        List<Vertex> path = graph.dijkstra(v1, v2, mode);
-        startDebugTimer();
 
-        return path.get(path.size() / 2);
+    /**
+     * Initializes a path to browse the graph
+     * @param character
+     */
+    public void initBrowsingPathFrom(Character character, EnumGraph enumGraph) {
+        Vertex start = graph.getVertexByLocation(character.getLocation());
+        path = enumGraph.equals(EnumGraph.BFS) ? graph.browseBFS(start, mode) : graph.browseDFS(start, mode);
+        startDebugTimer();
     }
 
     /**
@@ -532,7 +509,7 @@ public class Controller {
      * @return
      */
     public boolean checkIfNoObstacles(int x, int y) {
-        for (MapElement obstacle : obstaclesList)
+        for (MapElement obstacle : graph.getObstaclesList())
             if (obstacle.getX() == x && obstacle.getY() == y ||
                     x < 0 || y < 0 || x >= anchorPane.getWidth() || y >= anchorPane.getHeight())
                 return false;
@@ -604,26 +581,6 @@ public class Controller {
         }, 0, 150);
     }
 
-    /**
-     * Controls the buttons visibility
-     * @param bool
-     */
-    public void displayButtons(boolean bool){
-        button_start_simpleDijkstra.setVisible(bool);
-        button_start_dijkstraToEachOther.setVisible(bool);
-        button_start_DFS.setVisible(bool);
-        button_start_BFS.setVisible(bool);
-    }
-
-    /**
-     * Initializes a path to browse the graph
-     * @param character
-     */
-    public void initBrowsingPathFrom(Character character, EnumGraph enumGraph) {
-        Vertex start = graph.getVertexByLocation(character.getLocation());
-        path = enumGraph.equals(EnumGraph.BFS) ? graph.browseBFS(start, mode) : graph.browseDFS(start, mode);
-        startDebugTimer();
-    }
 
     /**
      * Clears previously marked locations
@@ -681,5 +638,21 @@ public class Controller {
                 });
             }
         }, 0, 10);
+    }
+
+    public void showAlertNoPathAvailable(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText("No path available");
+        alert.setContentText("We haven't found a correct path ! Parhaps should you think about removing few obstacles next time. 8)");
+        alert.show();
+    }
+
+    public static void showInstructions(){
+        Alert alert = new Alert(Alert.AlertType.INFORMATION);
+        alert.setTitle("Information Dialog");
+        alert.setHeaderText("Romeo & Juliet");
+        alert.setContentText(EnumText.INSTRUCTIONS.toString());
+        alert.show();
     }
 }

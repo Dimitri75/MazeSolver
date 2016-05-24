@@ -16,22 +16,23 @@ import java.util.*;
  */
 public class Graph {
     private int pace;
-    private int width;
-    private int height;
+    private int pixelWidth, pixelHeight;
+    private int lines, columns;
     private List<Vertex> listVertex;
     private List<MapElement> obstaclesList;
     private List<Edge> listEdges;
 
-    public Graph(int width, int height, List<MapElement> obstaclesList, int pace) {
-        this.width = width;
-        this.height = height;
-        this.obstaclesList = obstaclesList;
+    public Graph(int pixelWidth, int pixelHeight, int pace) {
+        this.pixelWidth = pixelWidth;
+        this.pixelHeight = pixelHeight;
         this.pace = pace;
 
+        lines = pixelWidth / pace;
+        columns = pixelHeight / pace - 1;
+
+        obstaclesList = new ArrayList<>();
         listVertex = new ArrayList<>();
         listEdges = new ArrayList<>();
-
-        init();
     }
 
     /**
@@ -91,9 +92,9 @@ public class Graph {
      */
     public void init() {
         boolean noObstacles;
-        for (int y = 0; y < height; y += pace) {
+        for (int y = 0; y < pixelHeight; y += pace) {
             Vertex leftVertex = null;
-            for (int x = 0; x < width; x += pace) {
+            for (int x = 0; x < pixelWidth; x += pace) {
                 noObstacles = true;
                 for (MapElement obstacle : obstaclesList)
                     if (obstacle.getX() == x && obstacle.getY() == y)
@@ -334,5 +335,21 @@ public class Graph {
         Random random = new Random();
         int randIndex = random.nextInt(listVertex.size());
         return listVertex.get(randIndex);
+    }
+
+    public int getPace() {
+        return pace;
+    }
+
+    public int getLines() {
+        return lines;
+    }
+
+    public int getColumns() {
+        return columns;
+    }
+
+    public List<MapElement> getObstaclesList() {
+        return obstaclesList;
     }
 }
