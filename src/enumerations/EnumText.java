@@ -3,7 +3,7 @@ package enumerations;
 /**
  * Created by Dimitri on 06/03/2016.
  */
-public enum  EnumText {
+public enum EnumText {
     INSTRUCTIONS(
             "Options :\n" +
             "- Checkbox \"Display algorithm\" : Display how the algorithm works to find paths\n" +
@@ -18,9 +18,9 @@ public enum  EnumText {
             "\n" +
             "3 - You can now add or remove obstacles by clicking on the map\n" +
             "\n" +
-            "5 - Press one of the four buttons to start a simulation\n" +
+            "4 - Press one of the four buttons to start a simulation\n" +
             "\n" +
-            "4 - Press start to restart\n" +
+            "5 - Press start to restart\n" +
             "\n" +
             "6 - Press restart to change your options");
 

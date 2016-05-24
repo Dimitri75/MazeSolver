@@ -349,6 +349,14 @@ public class Graph {
         return columns;
     }
 
+    public int getPixelWidth() {
+        return pixelWidth;
+    }
+
+    public int getPixelHeight() {
+        return pixelHeight;
+    }
+
     public List<MapElement> getObstaclesList() {
         return obstaclesList;
     }

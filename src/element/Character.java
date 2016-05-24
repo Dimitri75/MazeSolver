@@ -3,11 +3,17 @@ package element;
 import enumerations.EnumImage;
 import enumerations.EnumMode;
 import enumerations.EnumPosition;
+import enumerations.EnumSprite;
 import graph.Graph;
 import graph.Vertex;
+import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import sample.Controller;
+import sample.TimersHandler;
+import utils.AnimationHandler;
 
 import java.util.List;
+import java.util.TimerTask;
 
 /**
  * Created by Dimitri on 21/10/2015.
@@ -16,11 +22,15 @@ public class Character extends MapElement implements Runnable {
     private EnumPosition enumPosition;
     private List<Vertex> path;
     private boolean actionDone;
+    private EnumSprite enumSprite;
+    private AnimationHandler animationHandler;
 
-    public Character(int x, int y, int shapeSize, EnumImage image) {
+    public Character(int x, int y, int shapeSize, EnumImage image, EnumSprite enumSprite) {
         super(x, y, shapeSize, image);
         enumPosition = EnumPosition.RIGHT;
         actionDone = true;
+        this.enumSprite = enumSprite;
+        animationHandler = new AnimationHandler(this, enumSprite);
     }
 
     public boolean isActionDone() {
@@ -47,7 +57,7 @@ public class Character extends MapElement implements Runnable {
 
         path = graph.dijkstra(start, destination, mode);
 
-        return (path != null) ? true : false;
+        return path != null;
     }
 
     public void initPath(List<Vertex> path) {
@@ -94,6 +104,35 @@ public class Character extends MapElement implements Runnable {
                 }
             }
             actionDone = true;
+            stopAnimation();
         }
+    }
+
+    public void animate(){
+        if (enumSprite == null)
+            return;
+
+        if (animationHandler != null) {
+            animationHandler.purge();
+            animationHandler.cancel();
+        }
+
+        animationHandler = new AnimationHandler(this, enumSprite);
+        animationHandler.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                if (animationHandler != null)
+                    animationHandler.changeFrame();
+            }
+        }, 0, 150);
+    }
+
+    /**
+     * Handles cancelation of Juliette's animations and thread
+     */
+    public void stopAnimation() {
+        TimersHandler.cancelTimer(animationHandler);
+        Thread.currentThread().interrupt();
+        animationHandler = null;
     }
 }

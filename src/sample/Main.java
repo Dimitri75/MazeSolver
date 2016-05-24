@@ -9,7 +9,7 @@ import javafx.stage.Stage;
 public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("xml/sample.fxml"));
         primaryStage.setTitle("Romeo et Juliette");
         Scene scene = new Scene(root, 1200, 700);
         primaryStage.setResizable(false);
