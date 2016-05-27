@@ -63,7 +63,6 @@ public class Controller {
 
         vbox_options.setDisable(true);
         button_restart.setDisable(false);
-        disableButtons(true, button_start, button_restart);
 
         started = true;
         launched = false;
@@ -84,6 +83,8 @@ public class Controller {
     @FXML
     public void start_dijkstra() {
         displayButtons(false, button_start_dijkstra, button_start_astar);
+        disableButtons(true, button_start, button_restart);
+
         agentRunsDijkstra(graph.getVertexByLocation(exit.getX(), exit.getY()), mode);
         launched = true;
     }
@@ -91,6 +92,8 @@ public class Controller {
     @FXML
     public void start_astar() {
         displayButtons(false, button_start_dijkstra, button_start_astar);
+        disableButtons(true, button_start, button_restart);
+
         agentRunsAStar(graph.getVertexByLocation(exit.getX(), exit.getY()), mode);
         launched = true;
     }
