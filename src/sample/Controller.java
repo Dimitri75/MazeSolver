@@ -177,7 +177,8 @@ public class Controller {
      * Place obstacles around the map according to the size of it
      */
     public void initObstacles() {
-        MazeGenerator.basicMaze(graph);
+        MazeGenerator.basicMaze();
+        //MazeGenerator.exampleMaze(graph);
 
         for (MapElement obstacle : graph.getObstaclesList())
             anchorPane.getChildren().add(obstacle.getShape());
