@@ -72,4 +72,8 @@ public class MapElement extends Location {
             return true;
         return false;
     }
+
+    public void changeImage(EnumImage image){
+        getShape().setFill(new ImagePattern(new javafx.scene.image.Image(image.toString())));
+    }
 }

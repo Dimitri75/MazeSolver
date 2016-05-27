@@ -41,22 +41,12 @@
                         </Button>
                      </children>
                   </VBox>
-                        <Button fx:id="button_start_simpleDijkstra" onAction="#start_simpleDijkstra" prefHeight="65.0" prefWidth="225.0" text="Romeo the panda takes the shortest path to Juliette the raccoon who doesn't move (Dijkstra)." textAlignment="CENTER" textOverrun="CLIP" visible="false" wrapText="true">
+                        <Button fx:id="button_start_dijkstra" onAction="#start_dijkstra" prefHeight="65.0" prefWidth="225.0" text="Solve the maze using Dijkstra." textAlignment="CENTER" textOverrun="CLIP" visible="false" wrapText="true">
                             <HBox.margin>
                                 <Insets left="5.0" />
                             </HBox.margin>
                         </Button>
-                        <Button fx:id="button_start_dijkstraToEachOther" onAction="#start_multipleBFS" prefHeight="65.0" prefWidth="225.0" text="Romeo the panda and Juliette the raccoon travel to each other (Multiple BFS)." textAlignment="CENTER" textOverrun="CLIP" visible="false" wrapText="true">
-                            <HBox.margin>
-                                <Insets left="5.0" />
-                            </HBox.margin>
-                        </Button>
-                        <Button fx:id="button_start_BFS" onAction="#start_BFS" prefHeight="65.0" prefWidth="225.0" text="Romeo the panda tries (BFS) to find Juliette the raccoon who walks randomly." textAlignment="CENTER" textOverrun="CLIP" visible="false" wrapText="true">
-                            <HBox.margin>
-                                <Insets left="5.0" />
-                            </HBox.margin>
-                        </Button>
-                        <Button fx:id="button_start_DFS" onAction="#start_DFS" prefHeight="65.0" prefWidth="225.0" text="Romeo the panda tries (DFS) to find Juliette the raccoon who walks randomly." textAlignment="CENTER" textOverrun="CLIP" visible="false" wrapText="true">
+                        <Button fx:id="button_start_astar" onAction="#start_astar" prefHeight="65.0" prefWidth="225.0" text="Solve the maze using A*" textAlignment="CENTER" textOverrun="CLIP" visible="false" wrapText="true">
                             <HBox.margin>
                                 <Insets left="5.0" />
                             </HBox.margin>

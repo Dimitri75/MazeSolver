@@ -1,9 +1,7 @@
 package sample;
 
-import element.Location;
-import enumerations.EnumMode;
+import enumerations.EnumImage;
 import javafx.application.Platform;
-import utils.AnimationHandler;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -12,10 +10,11 @@ import java.util.TimerTask;
  * Created by Dimitri on 24/05/2016.
  */
 public class TimersHandler {
-    public static Timer julietteTimer, timer, timerBrowser;
+    public static Controller controller;
+    public static Timer timer, timerBrowser;
 
     /**
-     * Global timer which stops animation when Romeo and Juliette are done
+     * Global timer which stops animation when the agent is done
      */
     public static void startGlobalTimer() {
         cancelTimer(timer);
@@ -25,79 +24,25 @@ public class TimersHandler {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (Controller.romeo.isActionDone() && Controller.juliette.isActionDone()) {
+                    if (Controller.agent.isActionDone()) {
                         cancelTimer(timer);
-                        Controller.romeo.stopAnimation();
-                        Controller.juliette.stopAnimation();
+                        Controller.agent.stopAnimation();
+
+                        controller.removeAgentFromMap();
+                        Controller.exit.changeImage(EnumImage.EXIT_CLOSED);
                     }
                 });
             }
         }, 0, 300);
     }
 
-    /**
-     * Timer which handles the random walk of Juliette
-     */
-    public static void startJulietteTimer() {
-        cancelTimer(julietteTimer);
-
-        julietteTimer = new Timer();
-        julietteTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    if(!Controller.walkRandomly(Controller.juliette)) {
-                        cancelTimer(julietteTimer);
-                        Controller.juliette.stopAnimation();
-                    }
-                });
-            }
-        }, 0, 300);
-    }
 
     /**
-     * Global timer which handles the movements of Romeo trying to find Juliette
-     */
-    public static void startTimerBrowser(Controller controller) {
-        cancelTimer(timerBrowser);
-
-        timerBrowser = new Timer();
-        timerBrowser.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    if (Controller.areLocationsClose(Controller.romeo.getLocation(), Controller.juliette.getLocation())){
-                        Controller.juliette.stopAnimation();
-                        controller.romeoRunTheShortestPathToVertex(Controller.graph.getVertexByLocation(Controller.juliette.getLocation()), EnumMode.NORMAL);
-                        cancelTimer(timerBrowser, julietteTimer);
-                    }
-
-                    if (Controller.romeo.isActionDone()){
-                        Location location = Controller.path.popFirstAndRepushAtTheEnd().getLocation();
-
-                        if (Controller.areLocationsClose(Controller.graph.getVertexByLocation(Controller.romeo.getLocation()).getLocation(), location)){
-                            Controller.romeo.animate();
-                            Controller.romeo.setLocation(location);
-                        }
-                        else {
-                            controller.romeoRunTheShortestPathToVertex(Controller.graph.getVertexByLocation(location), EnumMode.NORMAL);
-                        }
-                    }
-                });
-            }
-        }, 0, 300);
-    }
-
-    /**
-     * Cancels both Romeo and Juliette
+     * Cancels agent animation
      */
     public static void stopMovements(){
-        if (Controller.romeo != null)
-            Controller.romeo.stopAnimation();
-
-        if (Controller.juliette != null)
-            Controller.juliette.stopAnimation();
-
+        if (Controller.agent != null)
+            Controller.agent.stopAnimation();
     }
 
 
