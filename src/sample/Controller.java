@@ -16,7 +16,6 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import list.CircularQueue;
-import utils.AnimationHandler;
 import utils.ResourcesUtils;
 
 import java.util.*;
@@ -115,8 +114,7 @@ public class Controller {
         slider_size.setFocusTraversable(false);
         button_start.setFocusTraversable(false);
         PACE = (slider_size.getValue() < 50) ? 50 : (int) slider_size.getValue();
-
-        initGraph();
+        if (!started) initGraph();
         initRomeoAndJuliette();
     }
 
@@ -180,6 +178,7 @@ public class Controller {
      */
     public void initObstacles() {
         MazeGenerator.basicMaze(graph);
+
         for (MapElement obstacle : graph.getObstaclesList())
             anchorPane.getChildren().add(obstacle.getShape());
     }
@@ -201,16 +200,18 @@ public class Controller {
                 graph.getObstaclesList().add(obstacle);
             }
             else {
-                for (MapElement element : graph.getObstaclesList()) {
-                    if (element.getX() == x && element.getY() == y) {
+                // Check if the position clicked is an obstacle
+                for (MapElement element : graph.getObstaclesList())
+                    if (element.getX() == x && element.getY() == y)
                         obstacle = element;
-                        anchorPane.getChildren().remove(element.getShape());
-                    }
-                }
-                if (obstacle != null)
+
+                // Remove the obstacle from the graph
+                if (obstacle != null) {
+                    anchorPane.getChildren().remove(obstacle.getShape());
                     graph.getObstaclesList().remove(obstacle);
+                }
             }
-            initGraph();
+            graph.init();
         }
     }
 
@@ -218,10 +219,17 @@ public class Controller {
      * Clears the map and remove elements
      */
     public void clearAll() {
+        clearObstacles();
         clear();
+    }
 
+    /**
+     * Remove the obstacles on the map and clean the list
+     */
+    public void clearObstacles(){
         for (MapElement obstacle : graph.getObstaclesList())
             anchorPane.getChildren().remove(obstacle.getShape());
+
         graph.getObstaclesList().clear();
     }
 

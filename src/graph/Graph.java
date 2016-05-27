@@ -87,10 +87,16 @@ public class Graph {
         return null;
     }
 
+    public void clearGraph(){
+        listVertex.clear();
+        listEdges.clear();
+    }
+
     /**
      * Initialize the graph according to the map and the obstacles
      */
     public void init() {
+        clearGraph();
         boolean noObstacles;
         for (int y = 0; y < pixelHeight; y += pace) {
             Vertex leftVertex = null;
