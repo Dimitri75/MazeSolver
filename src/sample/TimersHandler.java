@@ -30,6 +30,8 @@ public class TimersHandler {
 
                         controller.removeAgentFromMap();
                         Controller.exit.changeImage(EnumImage.EXIT_CLOSED);
+
+                        controller.disableButtons(false, controller.button_start, controller.button_restart);
                     }
                 });
             }

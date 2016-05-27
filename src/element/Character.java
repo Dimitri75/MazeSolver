@@ -60,6 +60,17 @@ public class Character extends MapElement implements Runnable {
         return path != null;
     }
 
+    public boolean initPathAStar(Graph graph, Vertex start, Vertex destination, EnumMode mode) {
+        actionDone = false;
+
+        if (path != null)
+            path.clear();
+
+        path = graph.aStar(start, destination, mode);
+
+        return path != null;
+    }
+
     public void initPath(List<Vertex> path) {
         this.path = path;
     }

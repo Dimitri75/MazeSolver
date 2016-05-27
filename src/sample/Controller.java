@@ -23,7 +23,7 @@ public class Controller {
     @FXML
     private Slider slider_size;
     @FXML
-    private Button button_start, button_restart, button_start_dijkstra, button_start_astar;
+    public Button button_start, button_restart, button_start_dijkstra, button_start_astar;
     @FXML
     private CheckBox checkbox_debug;
     @FXML
@@ -54,7 +54,7 @@ public class Controller {
 
         clear();
         initMap();
-        displayButtons(true);
+        displayButtons(true, button_start_dijkstra, button_start_astar);
 
         if (checkbox_debug.isSelected())
             mode = EnumMode.DEBUG;
@@ -63,6 +63,7 @@ public class Controller {
 
         vbox_options.setDisable(true);
         button_restart.setDisable(false);
+        disableButtons(true, button_start, button_restart);
 
         started = true;
         launched = false;
@@ -71,7 +72,7 @@ public class Controller {
     @FXML
     public void restart(){
         clearAll();
-        displayButtons(false);
+        displayButtons(false, button_start_dijkstra, button_start_astar);
         vbox_options.setDisable(false);
         button_restart.setDisable(true);
 
@@ -82,15 +83,15 @@ public class Controller {
 
     @FXML
     public void start_dijkstra() {
-        displayButtons(false);
-        agentRunTheShortestPathToVertex(graph.getVertexByLocation(exit.getX(), exit.getY()), mode);
+        displayButtons(false, button_start_dijkstra, button_start_astar);
+        agentRunsDijkstra(graph.getVertexByLocation(exit.getX(), exit.getY()), mode);
         launched = true;
     }
 
     @FXML
     public void start_astar() {
-        displayButtons(false);
-        // TODO : Implement a* algorithm
+        displayButtons(false, button_start_dijkstra, button_start_astar);
+        agentRunsAStar(graph.getVertexByLocation(exit.getX(), exit.getY()), mode);
         launched = true;
     }
 
@@ -144,7 +145,6 @@ public class Controller {
             randX -= randX % PACE;
             randY -= randY % PACE;
         }
-
 
         character.translateX(randX);
         character.translateY(randY);
@@ -251,21 +251,45 @@ public class Controller {
      * Controls the buttons visibility
      * @param bool
      */
-    public void displayButtons(boolean bool){
-        button_start_dijkstra.setVisible(bool);
-        button_start_astar.setVisible(bool);
+    public void displayButtons(boolean bool, Button... buttons){
+        for (Button button : buttons)
+            button.setVisible(bool);
+    }
+
+    /**
+     * Controls the buttons
+     * @param bool
+     */
+    public void disableButtons(boolean bool, Button... buttons){
+        for (Button button : buttons)
+            button.setDisable(bool);
     }
 
     /**
      * Starts simulation where the agent runs the shortest path to the given destination
      * @param destination
      */
-    public void agentRunTheShortestPathToVertex(Vertex destination, EnumMode mode){
+    public void agentRunsDijkstra(Vertex destination, EnumMode mode){
         if (agentThread != null)
             agentThread.interrupt();
 
-        Vertex romeoVertex = graph.getVertexByLocation(agent.getX(), agent.getY());
-        pathFound = agent.initPathDijkstra(graph, romeoVertex, destination, mode);
+        Vertex agentVertex = graph.getVertexByLocation(agent.getX(), agent.getY());
+        pathFound = agent.initPathDijkstra(graph, agentVertex, destination, mode);
+
+        // The debug timer will starts the simulation after being done
+        startDebugTimer();
+    }
+
+    /**
+     * Starts simulation where the agent runs the shortest path to the given destination
+     * @param destination
+     */
+    public void agentRunsAStar(Vertex destination, EnumMode mode){
+        if (agentThread != null)
+            agentThread.interrupt();
+
+        Vertex agentVertex = graph.getVertexByLocation(agent.getX(), agent.getY());
+        pathFound = agent.initPathAStar(graph, agentVertex, destination, mode);
 
         // The debug timer will starts the simulation after being done
         startDebugTimer();
@@ -278,9 +302,8 @@ public class Controller {
             agentThread.start();
             agent.animate();
         }
-        else {
+        else
             showAlertNoPathAvailable();
-        }
     }
 
     /**
@@ -310,9 +333,8 @@ public class Controller {
      */
     public void clearLocations(){
         if (markedLocations != null && !markedLocations.isEmpty()){
-            for (Rectangle rectangle : markedLocations){
+            for (Rectangle rectangle : markedLocations)
                 anchorPane.getChildren().remove(rectangle);
-            }
             markedLocations.clear();
         }
 

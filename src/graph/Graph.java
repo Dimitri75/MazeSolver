@@ -178,6 +178,11 @@ public class Graph {
         return null;
     }
 
+    public List<Vertex> aStar(Vertex start, Vertex destination, EnumMode mode){
+        // TODO : IMPLEMENT A* ALGORITHM
+        return dijkstra(start, destination, mode);
+    }
+
     public List<Vertex> getShortestPath(Vertex start, Vertex destination){
         List<Vertex> path = new ArrayList<>();
         for (Vertex vertex = destination; vertex != null; vertex = vertex.getPrevious(start))
