@@ -37,6 +37,7 @@ public class Location implements ILocation {
         this.y = y;
     }
 
+    @Override
     public boolean equals(Object other){
         if (x == ((Location)other).getX() && y == ((Location)other).getY())
             return true;

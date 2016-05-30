@@ -27,9 +27,9 @@ public class ResourcesUtils {
     private ResourcesUtils(){
         obstaclesDictionnary = new HashMap<>();
 
-        obstaclesDictionnary.put(0, new Image(EnumImage.OBSTACLE1.toString()));
-        obstaclesDictionnary.put(1, new Image(EnumImage.OBSTACLE2.toString()));
-        obstaclesDictionnary.put(2, new Image(EnumImage.OBSTACLE6.toString()));
+//        obstaclesDictionnary.put(0, new Image(EnumImage.OBSTACLE1.toString()));
+//        obstaclesDictionnary.put(1, new Image(EnumImage.OBSTACLE2.toString()));
+        obstaclesDictionnary.put(0, new Image(EnumImage.OBSTACLE6.toString()));
     }
 
     /**

@@ -7,7 +7,6 @@ import enumerations.*;
 import graph.Graph;
 import graph.MazeGenerator;
 import graph.Vertex;
-import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.input.MouseEvent;
@@ -127,7 +126,7 @@ public class Controller {
     }
 
     /**
-     * Generic method to init a character at a random position
+     * Generic method to initForResolution a character at a random position
      * @param character
      */
     public void initCharacter(MapElement character) {
@@ -159,15 +158,15 @@ public class Controller {
     public void initGraph() {
         graph = new Graph((int) anchorPane.getWidth(), (int) anchorPane.getHeight(), PACE);
         initObstacles();
-        graph.init();
+        graph.initForResolution();
     }
 
     /**
      * Place obstacles around the map according to the size of it
      */
     public void initObstacles() {
-        MazeGenerator.basicMaze();
-        //MazeGenerator.exampleMaze(graph);
+        //MazeGenerator.basicMaze();
+        MazeGenerator.dfsMaze();
 
         for (MapElement obstacle : graph.getObstaclesList())
             anchorPane.getChildren().add(obstacle.getShape());
@@ -201,7 +200,7 @@ public class Controller {
                     graph.getObstaclesList().remove(obstacle);
                 }
             }
-            graph.init();
+            graph.initForResolution();
         }
     }
 
@@ -299,7 +298,7 @@ public class Controller {
     public void runSimulation(){
         if (pathFound) {
             colorPath(agent.path);
-            replaceElementsOnTop(agent.getShape(), exit.getShape());
+            replaceElementsOnTop(exit.getShape(), agent.getShape());
 
             agentThread = new Thread(agent);
             TimersHandler.startGlobalTimer();
@@ -357,12 +356,13 @@ public class Controller {
         }
     }
 
-    public static void showAlertNoPathAvailable(){
+    public void showAlertNoPathAvailable(){
         Alert alert = new Alert(Alert.AlertType.INFORMATION);
         alert.setTitle("Information Dialog");
         alert.setHeaderText("No path available");
         alert.setContentText("We haven't found a correct path ! Parhaps should you think about removing few obstacles next time. 8)");
         alert.show();
+        disableButtons(false, button_start, button_restart);
     }
 
     public static void showInstructions(){

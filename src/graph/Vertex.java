@@ -5,6 +5,7 @@ import interfaces.ILocation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -15,15 +16,25 @@ public class Vertex implements ILocation, Comparable<Vertex> {
 	private Map<Vertex, Vertex> mapPrevious;
 	private double minDistance = Double.POSITIVE_INFINITY;
 	private ArrayList<Edge> adjacencies;
+	public boolean visited;
 
 	public Vertex(int x, int y) {
 		this.x = x;
 		this.y = y;
 		adjacencies = new ArrayList<>();
+		visited = false;
 	}
 
 	public ArrayList<Edge> getAdjacencies(){
 		return adjacencies;
+	}
+
+	public ArrayList<Vertex> getNeighbors(){
+		ArrayList<Vertex> neighbors = new ArrayList<>();
+		for (Edge edge : adjacencies)
+			neighbors.add(sameLocation(this, edge.getSource()) ? edge.getTarget() : edge.getSource());
+
+		return neighbors;
 	}
 
 	public void setMinDistance(double minDistance) {
@@ -80,5 +91,9 @@ public class Vertex implements ILocation, Comparable<Vertex> {
 	@Override
 	public void setY(int y) {
 		this.y = y;
+	}
+
+	public static boolean sameLocation(Vertex v1, Vertex v2){
+		return v1.getX() == v2.getX() && v1.getY() == v2.getY();
 	}
 }

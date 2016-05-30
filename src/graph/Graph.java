@@ -8,6 +8,7 @@ import enumerations.EnumMode;
 import javafx.scene.paint.Color;
 import list.CircularQueue;
 import sample.Controller;
+import utils.ResourcesUtils;
 
 import java.util.*;
 
@@ -46,6 +47,7 @@ public class Graph {
     private Edge addEdge(Vertex source, Vertex target, EnumGraph movementSpeed) {
         Edge edge = new Edge(source, target, movementSpeed);
         listEdges.add(edge);
+
         return edge;
     }
 
@@ -95,16 +97,13 @@ public class Graph {
     /**
      * Initialize the graph according to the map and the obstacles
      */
-    public void init() {
+    public void initForResolution() {
         clearGraph();
         boolean noObstacles;
         for (int y = 0; y < pixelHeight; y += pace) {
             Vertex leftVertex = null;
             for (int x = 0; x < pixelWidth; x += pace) {
-                noObstacles = true;
-                for (MapElement obstacle : obstaclesList)
-                    if (obstacle.getX() == x && obstacle.getY() == y)
-                        noObstacles = false;
+                noObstacles = !obstaclesList.contains(new Location(x, y));
 
                 Vertex tmpVertex = null;
                 if (noObstacles) {
@@ -117,7 +116,36 @@ public class Graph {
 
                     Vertex upVertex;
                     if (y != 0 && (upVertex = getVertexByLocation(x, y - pace)) != null) {
+                        addEdge(upVertex, tmpVertex, EnumGraph.SPEED_NORMAL);
+                        addEdge(tmpVertex, upVertex, EnumGraph.SPEED_NORMAL);
+                    }
+                }
+                leftVertex = tmpVertex;
+            }
+        }
+    }
 
+    public void fillWithWalls(){
+        for (int y = 0; y < pixelHeight; y += pace)
+            for (int x = 0; x < pixelWidth; x += pace)
+                obstaclesList.add(new MapElement(x, y, pace, ResourcesUtils.getInstance().getObstacle()));
+    }
+
+    public void initForGeneration() {
+        clearGraph();
+        fillWithWalls();
+        for (int y = 0; y < pixelHeight; y += pace) {
+            Vertex leftVertex = null;
+            for (int x = 0; x < pixelWidth; x += pace) {
+                Vertex tmpVertex;
+                    tmpVertex = addVertex(x, y);
+
+                    if (leftVertex != null) {
+                        addEdge(leftVertex, tmpVertex, EnumGraph.SPEED_NORMAL);
+                        addEdge(tmpVertex, leftVertex, EnumGraph.SPEED_NORMAL);
+
+                    Vertex upVertex;
+                    if (y != 0 && (upVertex = getVertexByLocation(x, y - pace)) != null) {
                         addEdge(upVertex, tmpVertex, EnumGraph.SPEED_NORMAL);
                         addEdge(tmpVertex, upVertex, EnumGraph.SPEED_NORMAL);
                     }
@@ -303,7 +331,7 @@ public class Graph {
     }
 
     /**
-     * Browses the graph recursively using DFS
+     * Browses the graph recursively using dfsMaze
      * @param currentVertex
      * @param allVertices
      */
@@ -325,7 +353,7 @@ public class Graph {
     }
 
     /**
-     * Uses the DFS method to return a filled CircularQueue
+     * Uses the dfsMaze method to return a filled CircularQueue
      * @param start
      * @return
      */
@@ -370,5 +398,9 @@ public class Graph {
 
     public List<MapElement> getObstaclesList() {
         return obstaclesList;
+    }
+
+    public List<Vertex> getListVertex() {
+        return listVertex;
     }
 }
