@@ -15,7 +15,9 @@ import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import utils.ResourcesUtils;
+import utils.TimersHandler;
 
 import java.util.*;
 
@@ -37,13 +39,13 @@ public class Controller {
 
     public static EnumMode mode;
     private static boolean launched, started, pathFound;
-    private static Timer debugTimer;
     public static Graph graph;
     public static Character agent;
     public static MapElement exit;
     public static Thread agentThread;
     public static List<Rectangle> markedLocations = new ArrayList<>();
     public static LinkedList<Rectangle> locationsToMark = new LinkedList<>();
+    private static Color lastColor;
 
     public Controller() {
     }
@@ -51,19 +53,15 @@ public class Controller {
     @FXML
     public void start() {
         TimersHandler.controller = this;
+        Character.controller = this;
 
         clear();
         initMap();
+        mode = checkbox_debug.isSelected() ? EnumMode.DEBUG : EnumMode.NORMAL;
+
         displayButtons(true, button_start_dijkstra, button_start_astar);
-
-        if (checkbox_debug.isSelected())
-            mode = EnumMode.DEBUG;
-        else
-            mode = EnumMode.NORMAL;
-
         vbox_options.setDisable(true);
         button_restart.setDisable(false);
-
         started = true;
         launched = false;
     }
@@ -104,7 +102,7 @@ public class Controller {
     public void initMap() {
         slider_size.setFocusTraversable(false);
         button_start.setFocusTraversable(false);
-        PACE = (slider_size.getValue() < 50) ? 50 : (int) slider_size.getValue();
+        PACE = (slider_size.getValue() < 25) ? 25 : (int) slider_size.getValue();
         if (!started) initGraph();
 
         initAgentAndExit();
@@ -116,7 +114,7 @@ public class Controller {
     public void initAgentAndExit() {
         try {
             exit = new MapElement(0, 0, PACE, EnumImage.EXIT_OPENED);
-            agent = new Character(0, 0, PACE, EnumImage.PANDA, EnumSprite.PANDA_SPRITE);
+            agent = new Character(0, 0, PACE, EnumImage.AGENT, EnumSprite.AGENT_SPRITE);
 
             while (!checkIfNoCharacters(agent.getLocation(), exit)) {
                 initCharacter(exit);
@@ -230,7 +228,7 @@ public class Controller {
      */
     public void clear(){
         clearLocations();
-        TimersHandler.cancelTimer(TimersHandler.timer, TimersHandler.timerBrowser, debugTimer);
+        TimersHandler.cancelTimer(TimersHandler.timer, TimersHandler.timerBrowser, TimersHandler.debugTimer);
         TimersHandler.stopMovements();
 
         label_error.setText("");
@@ -280,7 +278,7 @@ public class Controller {
         pathFound = agent.initPathDijkstra(graph, agentVertex, destination, mode);
 
         // The debug timer will starts the simulation after being done
-        startDebugTimer();
+        TimersHandler.startDebugTimer();
     }
 
     /**
@@ -295,18 +293,31 @@ public class Controller {
         pathFound = agent.initPathAStar(graph, agentVertex, destination, mode);
 
         // The debug timer will starts the simulation after being done
-        startDebugTimer();
+        TimersHandler.startDebugTimer();
     }
 
     public void runSimulation(){
         if (pathFound) {
+            colorPath(agent.path);
+            replaceElementsOnTop(agent.getShape(), exit.getShape());
+
             agentThread = new Thread(agent);
             TimersHandler.startGlobalTimer();
             agentThread.start();
-            agent.animate();
         }
         else
             showAlertNoPathAvailable();
+    }
+
+    /**
+     * Replace elements on top the scene by removing and readding them
+     * @param shapes
+     */
+    public void replaceElementsOnTop(Shape... shapes){
+        for (Shape shape : shapes){
+            anchorPane.getChildren().remove(shape);
+            anchorPane.getChildren().add(shape);
+        }
     }
 
     /**
@@ -368,45 +379,39 @@ public class Controller {
      * @param color
      */
     public static void addLocationToMark(Location location, Color color){
+        locationsToMark.add(locationToRectangle(location, color));
+        lastColor = color;
+    }
+
+    /**
+     * Color a location in the scene
+     * @param location
+     * @param color
+     */
+    public void markLocation(Location location, Color color){
+        Rectangle rectangle = locationToRectangle(location, color);
+        markedLocations.add(rectangle);
+        anchorPane.getChildren().add(rectangle);
+    }
+
+    public void colorPath(List<Vertex> path){
+        for (Vertex vertex : path)
+            markLocation(vertex.getLocation(), lastColor);
+    }
+
+    /**
+     * Transform a location to a javafx Rectangle
+     * @param location
+     * @param color
+     * @return
+     */
+    private static Rectangle locationToRectangle(Location location, Color color){
         Rectangle rectangle = new Rectangle(PACE, PACE);
         rectangle.setX(location.getX());
         rectangle.setY(location.getY());
         rectangle.setFill(color);
         rectangle.setStroke(Color.LIGHTGRAY);
         rectangle.setOpacity(0.5);
-
-        locationsToMark.add(rectangle);
-    }
-
-    /**
-     * Handle tiles coloration using the list of locations to mark
-     */
-    public void startDebugTimer() {
-        if (!Controller.mode.equals(EnumMode.DEBUG)) {
-            runSimulation();
-            return;
-        }
-
-        TimersHandler.cancelTimer(debugTimer);
-
-        debugTimer = new Timer();
-        debugTimer.scheduleAtFixedRate(new TimerTask() {
-            @Override
-            public void run() {
-                Platform.runLater(() -> {
-                    if (Controller.locationsToMark.isEmpty()) {
-                        TimersHandler.cancelTimer(debugTimer);
-
-                        // Run the simulation when the debug display has ended
-                        runSimulation();
-                    }
-                    else {
-                        Rectangle rectangle = Controller.locationsToMark.pop();
-                        anchorPane.getChildren().add(rectangle);
-                        Controller.markedLocations.add(rectangle);
-                    }
-                });
-            }
-        }, 0, 10);
+        return rectangle;
     }
 }

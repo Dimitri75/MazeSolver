@@ -1,7 +1,10 @@
-package sample;
+package utils;
 
 import enumerations.EnumImage;
+import enumerations.EnumMode;
 import javafx.application.Platform;
+import javafx.scene.shape.Rectangle;
+import sample.Controller;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -11,7 +14,7 @@ import java.util.TimerTask;
  */
 public class TimersHandler {
     public static Controller controller;
-    public static Timer timer, timerBrowser;
+    public static Timer timer, timerBrowser, debugTimer;
 
     /**
      * Global timer which stops animation when the agent is done
@@ -36,6 +39,38 @@ public class TimersHandler {
                 });
             }
         }, 0, 300);
+    }
+
+    /**
+     * Handle tiles coloration using the list of locations to mark
+     */
+    public static void startDebugTimer() {
+        if (!Controller.mode.equals(EnumMode.DEBUG)) {
+            controller.runSimulation();
+            return;
+        }
+
+        TimersHandler.cancelTimer(debugTimer);
+
+        debugTimer = new Timer();
+        debugTimer.scheduleAtFixedRate(new TimerTask() {
+            @Override
+            public void run() {
+                Platform.runLater(() -> {
+                    if (Controller.locationsToMark.isEmpty()) {
+                        TimersHandler.cancelTimer(debugTimer);
+
+                        // Run the simulation when the debug display has ended
+                        controller.runSimulation();
+                    }
+                    else {
+                        Rectangle rectangle = Controller.locationsToMark.pop();
+                        controller.anchorPane.getChildren().add(rectangle);
+                        Controller.markedLocations.add(rectangle);
+                    }
+                });
+            }
+        }, 0, 10);
     }
 
 
