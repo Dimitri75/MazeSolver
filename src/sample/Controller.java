@@ -309,7 +309,7 @@ public class Controller {
     }
 
     /**
-     * Replace elements on top the scene by removing and readding them
+     * Replace elements on top the scene by removing and reading them
      * @param shapes
      */
     public void replaceElementsOnTop(Shape... shapes){
