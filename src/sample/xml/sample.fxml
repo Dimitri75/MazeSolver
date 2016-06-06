@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<?import javafx.collections.FXCollections?>
+
+<?import javafx.collections.*?>
 <?import java.lang.*?>
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
@@ -9,7 +10,10 @@
    <bottom>
         <SplitPane dividerPositions="0.8753581661891118" orientation="VERTICAL" prefHeight="0.0" prefWidth="0.0" BorderPane.alignment="CENTER">
             <items>
-                <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#setObstacle" prefHeight="600.0" prefWidth="1200.0" style="-fx-background-image: url('http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/wov.png')" />
+                <AnchorPane fx:id="anchorPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" onMouseClicked="#setObstacle" prefHeight="600.0" prefWidth="1200.0" style="-fx-background-image: url('http://subtlepatterns2015.subtlepatterns.netdna-cdn.com/patterns/wov.png')">
+               <children>
+                  <Label fx:id="instructionsLabel" layoutX="250.0" layoutY="50.0" prefHeight="500.0" prefWidth="700.0" wrapText="true" />
+               </children></AnchorPane>
                 <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="100.0" prefWidth="1200.0" style="-fx-background-color: rgb(75, 79, 77);">
                     <children>
                   <VBox fx:id="vbox_options" alignment="CENTER" prefHeight="200.0" prefWidth="175.0">
@@ -38,7 +42,6 @@
                      </children>
                   </VBox>
                         <Label fx:id="label_error" alignment="BOTTOM_CENTER" prefHeight="20.0" textAlignment="CENTER" textFill="white">
-
                         </Label>
                   <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0">
                      <children>

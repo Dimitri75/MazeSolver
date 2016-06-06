@@ -10,13 +10,12 @@ public class Main extends Application {
     @Override
     public void start(Stage primaryStage) throws Exception{
         Parent root = FXMLLoader.load(getClass().getResource("xml/sample.fxml"));
+
         primaryStage.setTitle("Maze Generator & Solver");
         Scene scene = new Scene(root, 1200, 700);
         primaryStage.setResizable(false);
         primaryStage.setScene(scene);
         primaryStage.show();
-
-        Controller.showInstructions();
     }
 
     public static void main(String[] args) {

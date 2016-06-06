@@ -29,7 +29,7 @@ public class Graph {
         this.pace = pace;
 
         lines = pixelWidth / pace;
-        columns = pixelHeight / pace - 1;
+        columns = pixelHeight / pace;
 
         obstaclesList = new ArrayList<>();
         listVertex = new ArrayList<>();

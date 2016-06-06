@@ -32,12 +32,13 @@ public class Controller {
     @FXML
     private ComboBox maze_comboBox;
     @FXML
+    public Label instructionsLabel;
+    @FXML
     private Label label_error;
     @FXML
     public AnchorPane anchorPane;
 
     private static Integer PACE;
-
     public static EnumMode mode;
     private static boolean launched, started, pathFound;
     public static Graph graph;
@@ -52,6 +53,17 @@ public class Controller {
     }
 
     @FXML
+    public void initialize(){
+        instructionsLabel.setText(EnumText.INSTRUCTIONS.toString());
+    }
+
+
+    public void showInstructions(boolean show){
+        if (show) instructionsLabel.setVisible(true);
+        else instructionsLabel.setVisible(false);
+    }
+
+    @FXML
     public void start() {
         clear();
         initMap();
@@ -63,6 +75,7 @@ public class Controller {
         button_restart.setDisable(false);
 
         displayButtons(true, button_start_dijkstra, button_start_astar);
+        showInstructions(false);
         started = true;
         launched = false;
     }
@@ -76,7 +89,7 @@ public class Controller {
 
         started = false;
         launched = false;
-        showInstructions();
+        showInstructions(true);
     }
 
     @FXML
@@ -377,13 +390,6 @@ public class Controller {
         disableButtons(false, button_start, button_restart);
     }
 
-    public static void showInstructions(){
-        Alert alert = new Alert(Alert.AlertType.INFORMATION);
-        alert.setTitle("Information Dialog");
-        alert.setHeaderText("Maze Generator & Solver");
-        alert.setContentText(EnumText.INSTRUCTIONS.toString());
-        alert.show();
-    }
 
     /**
      * Mark a location which will be colored by the debug timer
