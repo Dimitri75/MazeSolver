@@ -166,12 +166,8 @@ public class Controller {
      * Place obstacles around the map according to the size of it
      */
     public void initObstacles() {
-        //MazeGenerator.basicMaze();
-
-      // MazeGenerator.dfsMaze();
-        MazeGenerator.recurciveDivision();
-     //   MazeGenerator.dfsMaze();
-
+        // MazeGenerator.dfsMaze();
+        MazeGenerator.recursiveDivision();
 
         for (MapElement obstacle : graph.getObstaclesList())
             anchorPane.getChildren().add(obstacle.getShape());
@@ -189,7 +185,7 @@ public class Controller {
             int y = (int) e.getSceneY() - (int) e.getSceneY() % PACE;
 
             if (checkIfNoObstacles(x, y) && checkIfNoCharacters(new Location(x, y), agent, exit)) {
-                obstacle = new MapElement(x, y, PACE, ResourcesUtils.getInstance().getObstacle());
+                obstacle = new MapElement(x, y, PACE, ResourcesUtils.getInstance().getObstacleImage());
                 anchorPane.getChildren().add(obstacle.getShape());
                 graph.getObstaclesList().add(obstacle);
             }

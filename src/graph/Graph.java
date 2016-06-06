@@ -128,7 +128,7 @@ public class Graph {
     public void fillWithWalls(){
         for (int y = 0; y < pixelHeight; y += pace)
             for (int x = 0; x < pixelWidth; x += pace)
-                obstaclesList.add(new MapElement(x, y, pace, ResourcesUtils.getInstance().getObstacle()));
+                obstaclesList.add(new MapElement(x, y, pace, ResourcesUtils.getInstance().getObstacleImage()));
     }
 
     public void initForGeneration() {
@@ -352,8 +352,6 @@ public class Graph {
             }
         }
     }
-
-
 
     /**
      * Uses the dfs method to return a filled CircularQueue

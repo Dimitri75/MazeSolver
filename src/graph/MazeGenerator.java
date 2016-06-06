@@ -6,8 +6,6 @@ import sample.Controller;
 import utils.ResourcesUtils;
 
 
-import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,98 +18,67 @@ import java.util.Stack;
 public class MazeGenerator {
 
     /**
-     * RECURCIVE DIVISION
+     * RECURSIVE DIVISION
      */
-    public static void recurciveDivision()
-    {
-
+    public static void recursiveDivision()    {
         int columns = Controller.graph.getColumns();
         int lines = Controller.graph.getLines();
-        recurciveDivision(0,columns+1,lines,0);
-
+        recursiveDivision(0, columns + 1, lines, 0);
     }
 
-    public static void recurciveDivision(int left, int right, int top, int bottom)
-    {
-        int width = right-left;
-        int height = top-bottom;
+    public static void recursiveDivision(int left, int right, int top, int bottom){
+        int width = right - left;
+        int height = top - bottom;
 
-        if(width > 2 && height > 2){
-
-            if(width > height)
+        if (width > 2 || height > 2) {
+            if (width >= height)
                 verticalBreak(left, right, top, bottom);
-
-            else if(height > width)
+            else
                 horizontalBreak(left, right, top, bottom);
-
-            else if(height == width){
-                Random rand = new Random();
-                boolean pickOne = rand.nextBoolean();
-
-                if(pickOne)
-                    verticalBreak(left, right, top, bottom);
-                else
-                    horizontalBreak(left, right, top, bottom);
-            }
-        }else if(width > 2 && height <=2){
-            verticalBreak(left, right, top, bottom);
-        }else if(width <=2 && height > 2){
-            horizontalBreak(left, right, top, bottom);
         }
     }
 
-
-    public static void verticalBreak(int left, int right, int top, int bottom)
-    {
-
+    public static void verticalBreak(int left, int right, int top, int bottom){
         List<MapElement> obstaclesList = Controller.graph.getObstaclesList();
         int pace = Controller.graph.getPace();
         MapElement obstacle;
         Random rand = new Random();
 
-        int pivot = rand.nextInt((right-left-1)/2)*2 +  left + 2;
-
-
-        for(int i=bottom; i<top; i++){
-            obstacle = new MapElement( pace*i, pivot*pace, pace, ResourcesUtils.getInstance().getObstacle());
+        int pivot = rand.nextInt((right - left - 1) / 2) * 2 +  left + 2;
+        for(int i = bottom; i < top; ++i){
+            obstacle = new MapElement( pace * i, pivot * pace, pace, ResourcesUtils.getInstance().getObstacleImage());
             obstaclesList.add(obstacle);
-
         }
 
-        int breakWall =rand.nextInt((top-bottom)/2) * 2 + 1 + bottom;
-
-        obstaclesList.remove(new Location(breakWall*pace,pivot*pace));
-
-        recurciveDivision(left, pivot, top, bottom);
-        recurciveDivision(pivot, right, top, bottom);
+        int xWallToBreak = rand.nextInt((top - bottom) / 2) * 2 + 1 + bottom;
+        obstaclesList.remove(new Location(xWallToBreak * pace, pivot * pace));
+        recursiveDivision(left, pivot, top, bottom);
+        recursiveDivision(pivot, right, top, bottom);
     }
 
-    public static void horizontalBreak(int left, int right, int top, int bottom)
-    {
+
+    public static void horizontalBreak(int left, int right, int top, int bottom){
         List<MapElement> obstaclesList = Controller.graph.getObstaclesList();
         int pace = Controller.graph.getPace();
         MapElement obstacle;
         Random rand = new Random();
 
-        int pivot =  bottom  + 2 + rand.nextInt((top-bottom-1)/2)*2;
-        if(pivot%2 == 1)
-            pivot++;
+        int pivot =  bottom  + 2 + rand.nextInt((top - bottom - 1) / 2) * 2;
+        if(pivot % 2 == 1) pivot++;
 
-        for(int i=left; i<right; i++){
-            obstacle = new MapElement( pace*pivot, i*pace, pace, ResourcesUtils.getInstance().getObstacle());
+        for(int i = left; i < right; ++i){
+            obstacle = new MapElement(pace * pivot, i * pace, pace, ResourcesUtils.getInstance().getObstacleImage());
             obstaclesList.add(obstacle);
-
         }
 
-        int breakWall = left + rand.nextInt((right-left)/2) * 2 + 1;
-        obstaclesList.remove(new Location(pivot*pace,breakWall*pace));
-
-        recurciveDivision(left, right, top, pivot);
-        recurciveDivision(left, right, pivot, bottom);
+        int yWallToBreak = left + rand.nextInt((right-left)/2) * 2 + 1;
+        obstaclesList.remove(new Location(pivot * pace, yWallToBreak * pace));
+        recursiveDivision(left, right, top, pivot);
+        recursiveDivision(left, right, pivot, bottom);
     }
-
-
-
+    /**
+     * END RECURSIVE DIVISION
+     */
 
 
     /**

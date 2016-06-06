@@ -36,7 +36,7 @@ public class ResourcesUtils {
      * Returns a random obstacle element
      * @return
      */
-    public Image getObstacle(){
+    public Image getObstacleImage(){
         Random random = new Random();
         return obstaclesDictionnary.get(random.nextInt(obstaclesDictionnary.size()));
     }
