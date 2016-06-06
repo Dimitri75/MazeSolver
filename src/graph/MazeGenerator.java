@@ -21,7 +21,7 @@ public class MazeGenerator {
     public static void recursiveDivision()    {
         int columns = Controller.graph.getColumns();
         int lines = Controller.graph.getLines();
-        recursiveDivision(0, columns + 1, lines, 0);
+        recursiveDivision(0, columns, lines, 0);
     }
 
     private static void recursiveDivision(int left, int right, int top, int bottom){
@@ -69,7 +69,7 @@ public class MazeGenerator {
             obstaclesList.add(obstacle);
         }
 
-        int yWallToBreak = left + rand.nextInt((right-left)/2) * 2 + 1;
+        int yWallToBreak = left + rand.nextInt((right-left) / 2) * 2 + 1;
         obstaclesList.remove(new Location(pivot * pace, yWallToBreak * pace));
         recursiveDivision(left, right, top, pivot);
         recursiveDivision(left, right, pivot, bottom);
