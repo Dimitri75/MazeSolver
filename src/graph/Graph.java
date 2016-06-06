@@ -156,6 +156,14 @@ public class Graph {
     }
 
     /**
+     * Add the location to the timer which will display how the algorithm works
+     */
+    public void colorifyLocation(EnumMode mode, Vertex vertex, Color color){
+        if (mode.equals(EnumMode.DEBUG))
+            Controller.addLocationToMark(vertex.getLocation(), color);
+    }
+
+    /**
      * Reinitializes vertices distance and previous attribute
      */
     private void reinitVertices() {
@@ -173,42 +181,62 @@ public class Graph {
      * @return
      */
     public List<Vertex> dijkstra(Vertex start, Vertex destination, EnumMode mode) {
-        Color debugColor = EnumColor.getColorAt(-1);
-        reinitVertices();
+        if (!listVertex.contains(start) || !listVertex.contains(destination))
+            return null;
 
-        // ComputePaths
-        start.setMinDistance(0.);
-        PriorityQueue<Vertex> vertexQueue = new PriorityQueue<>();
-        vertexQueue.add(start);
+        Color debugColor = EnumColor.getColorAt(-1);
+        PriorityQueue<Vertex> vertexQueue = computePaths(start);
 
         while (!vertexQueue.isEmpty()) {
             Vertex current = vertexQueue.poll();
+            colorifyLocation(mode, current, debugColor);
+            workForAdjacencies(current, start, vertexQueue);
+        }
+        vertexQueue.clear();
 
-            if (mode.equals(EnumMode.DEBUG))
-                Controller.addLocationToMark(current.getLocation(), debugColor);
+        return getShortestPath(start, destination);
+    }
+
+    public PriorityQueue<Vertex> computePaths(Vertex start){
+        reinitVertices();
+        start.setMinDistance(0.);
+        PriorityQueue<Vertex> vertexQueue = new PriorityQueue<>();
+        vertexQueue.add(start);
+        return vertexQueue;
+    }
+
+    public List<Vertex> aStar(Vertex start, Vertex destination, EnumMode mode){
+        if (!listVertex.contains(start) || !listVertex.contains(destination))
+            return null;
+
+        Color debugColor = EnumColor.getColorAt(-1);
+        PriorityQueue<Vertex> vertexQueue = computePaths(start);
+
+        while (!vertexQueue.isEmpty()) {
+            Vertex current = vertexQueue.poll();
+            colorifyLocation(mode, current, debugColor);
 
             if (current.equals(destination))
                 return getShortestPath(start, destination);
 
-            for (Edge e : current.getAdjacencies()) {
-                Vertex targetVertex = e.getTarget();
-                double distanceThroughCurrent = current.getMinDistance() + e.getWeight();
-
-                if (distanceThroughCurrent < targetVertex.getMinDistance()) {
-                    targetVertex.setMinDistance(distanceThroughCurrent);
-                    targetVertex.addPrevious(current, start);
-                    vertexQueue.add(targetVertex);
-                }
-            }
+            workForAdjacencies(current, start, vertexQueue);
         }
         vertexQueue.clear();
 
         return null;
     }
 
-    public List<Vertex> aStar(Vertex start, Vertex destination, EnumMode mode){
-        // TODO : IMPLEMENT A* ALGORITHM
-        return dijkstra(start, destination, mode);
+    public void workForAdjacencies(Vertex current, Vertex start, PriorityQueue vertexQueue){
+        for (Edge e : current.getAdjacencies()) {
+            Vertex targetVertex = e.getTarget();
+            double distanceThroughCurrent = current.getMinDistance() + e.getWeight();
+
+            if (distanceThroughCurrent < targetVertex.getMinDistance()) {
+                targetVertex.setMinDistance(distanceThroughCurrent);
+                targetVertex.addPrevious(current, start);
+                vertexQueue.add(targetVertex);
+            }
+        }
     }
 
     public List<Vertex> getShortestPath(Vertex start, Vertex destination){
@@ -236,7 +264,6 @@ public class Graph {
             verticesMap.put(explorator, new LinkedList<>());
 
             queue = verticesMap.get(explorator);
-
             explorator.setMinDistance(0.);
             queue.add(explorator);
 
@@ -287,21 +314,6 @@ public class Graph {
             Controller.addLocationToMark(toVisit.getLocation(), debugColor);
     }
 
-    public void loopToEnqueueAllAdjacencies(Vertex vertex, List<Vertex> visitedVertices, LinkedList<Vertex> queue, LinkedList<Vertex> path, EnumMode mode, Color debugColor){
-        Vertex neighbor;
-        for (Edge edge : vertex.getAdjacencies()) {
-            neighbor = edge.getTarget();
-
-            if (!visitedVertices.contains(neighbor)) {
-                queue.add(neighbor);
-                path.add(neighbor);
-                visitedVertices.add(neighbor);
-
-                if (mode.equals(EnumMode.DEBUG))
-                    Controller.addLocationToMark(neighbor.getLocation(), debugColor);
-            }
-        }
-    }
 
     /**
      * Browses the graph using BFS method
@@ -317,43 +329,34 @@ public class Graph {
 
         queue.add(start);
         visitedVertices.add(start);
-
-        if (mode.equals(EnumMode.DEBUG))
-            Controller.addLocationToMark(start.getLocation(), debugColor);
+        colorifyLocation(mode, start, debugColor);
 
         Vertex current;
         while (!queue.isEmpty()) {
             current = queue.poll();
-
             loopToEnqueueAllAdjacencies(current, visitedVertices, queue, circularQueue, mode, debugColor);
         }
         return circularQueue;
     }
 
-    /**
-     * Browses the graph recursively using dfsMaze
-     * @param currentVertex
-     * @param allVertices
-     */
-    private void browseDFS(Vertex currentVertex, List<Vertex> allVertices, CircularQueue circularQueue, EnumMode mode, Color debugColor){
-        circularQueue.add(currentVertex);
-        allVertices.remove(currentVertex);
+    public void loopToEnqueueAllAdjacencies(Vertex vertex, List<Vertex> visitedVertices, LinkedList<Vertex> queue, LinkedList<Vertex> path, EnumMode mode, Color debugColor){
+        Vertex neighbor;
+        for (Edge edge : vertex.getAdjacencies()) {
+            neighbor = edge.getTarget();
 
-        if (mode.equals(EnumMode.DEBUG))
-            Controller.addLocationToMark(currentVertex.getLocation(), debugColor);
-
-        if (allVertices.isEmpty())
-            return;
-
-        for (Edge e : currentVertex.getAdjacencies()) {
-            if (allVertices.contains(e.getTarget())) {
-                browseDFS(e.getTarget(), allVertices, circularQueue, mode, debugColor);
+            if (!visitedVertices.contains(neighbor)) {
+                queue.add(neighbor);
+                path.add(neighbor);
+                visitedVertices.add(neighbor);
+                colorifyLocation(mode, neighbor, debugColor );
             }
         }
     }
 
+
+
     /**
-     * Uses the dfsMaze method to return a filled CircularQueue
+     * Uses the dfs method to return a filled CircularQueue
      * @param start
      * @return
      */
@@ -365,6 +368,27 @@ public class Graph {
         browseDFS(start, allVertices, circularQueue, mode, debugColor);
         return circularQueue;
     }
+
+    /**
+     * Browses the graph recursively using dfsMaze
+     * @param currentVertex
+     * @param allVertices
+     */
+    private void browseDFS(Vertex currentVertex, List<Vertex> allVertices, CircularQueue circularQueue, EnumMode mode, Color debugColor){
+        circularQueue.add(currentVertex);
+        allVertices.remove(currentVertex); // non visited
+        colorifyLocation(mode, currentVertex, debugColor);
+
+        if (allVertices.isEmpty())
+            return;
+
+        for (Edge e : currentVertex.getAdjacencies()) {
+            if (allVertices.contains(e.getTarget())) {
+                browseDFS(e.getTarget(), allVertices, circularQueue, mode, debugColor);
+            }
+        }
+    }
+
 
     /**
      * Returns a random vertex
@@ -400,7 +424,7 @@ public class Graph {
         return obstaclesList;
     }
 
-    public List<Vertex> getListVertex() {
+    public List<Vertex> getListVertices() {
         return listVertex;
     }
 }

@@ -19,7 +19,6 @@ public class Main extends Application {
         Controller.showInstructions();
     }
 
-
     public static void main(String[] args) {
         launch(args);
     }

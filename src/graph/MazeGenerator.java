@@ -52,35 +52,36 @@ public class MazeGenerator {
         Controller.graph.initForGeneration();
 
         Vertex start = Controller.graph.getRandomVertex();
-        dfsMaze(start, stack);
+
+        Vertex vertex = start;
+        do {
+            stack.add(vertex);
+            Controller.graph.getObstaclesList().remove(vertex);
+            vertex.visited = true;
+        } while ((vertex = dfsGetRandomNeighborsAndBreakWalls(vertex, stack)) != null);
     }
 
-    public static void dfsMaze(Vertex vertex, Stack<Vertex> stack){
-        stack.add(vertex);
-        Controller.graph.getObstaclesList().remove(vertex);
-        vertex.visited = true;
-
-        Vertex randomNeighbor = dfsGetRandomNeighbor(vertex, stack);
-        if (randomNeighbor == null) return;
-
-        dfsMaze(randomNeighbor, stack);
-    }
-
-    public static Vertex dfsGetRandomNeighbor(Vertex vertex, Stack<Vertex> stack){
+    public static Vertex dfsGetRandomNeighborsAndBreakWalls(Vertex vertex, Stack<Vertex> stack){
         Vertex randomNeighbor;
         Vertex current = vertex;
 
-        while ((randomNeighbor = dfsGetRandomNeighbor(current)) == null){
+        while ((randomNeighbor = dfsGetRandomNeighbors(current)) == null){
             if (stack.isEmpty()) return null;
             current = stack.pop();
         }
-
         dfsBreakWall(current, randomNeighbor);
 
         return randomNeighbor;
     }
 
-    public static Vertex dfsGetRandomNeighbor(Vertex location){
+    /**
+     * Get random neighbor of a location.
+     * If none, return null
+     *
+     * @param location
+     * @return
+     */
+    public static Vertex dfsGetRandomNeighbors(Vertex location){
         int pace = Controller.graph.getPace();
         Random random = new Random();
         ArrayList<Vertex> neighbors;
@@ -91,21 +92,23 @@ public class MazeGenerator {
         neighbors.add(Controller.graph.getVertexByLocation(location.getX(), location.getY() + 2 * pace));
         neighbors.add(Controller.graph.getVertexByLocation(location.getX(), location.getY() - 2 * pace));
 
-        ArrayList<Vertex> vertexesToRemove = new ArrayList<>();
+        ArrayList<Vertex> verticesToRemove = new ArrayList<>();
         for (Vertex neighbor : neighbors){
             if (neighbor == null || neighbor.visited)
-                vertexesToRemove.add(neighbor);
+                verticesToRemove.add(neighbor);
         }
 
-        for (Vertex toRemove : vertexesToRemove)
+        for (Vertex toRemove : verticesToRemove)
             neighbors.remove(toRemove);
 
-        if (neighbors.isEmpty()) return null;
-
-        int rand = random.nextInt(neighbors.size());
-        return neighbors.get(rand);
+        return neighbors.isEmpty() ? null : neighbors.get(random.nextInt(neighbors.size()));
     }
 
+    /**
+     * Break walls at given locations and the one between them
+     * @param v1
+     * @param v2
+     */
     public static void dfsBreakWall(Vertex v1, Vertex v2){
         int x = v1.getX();
         int y = v1.getY();
