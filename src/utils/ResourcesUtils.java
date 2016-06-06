@@ -27,8 +27,9 @@ public class ResourcesUtils {
     private ResourcesUtils(){
         obstaclesDictionnary = new HashMap<>();
 
-        obstaclesDictionnary.put(0, new Image(EnumImage.OBSTACLE1.toString()));
-        obstaclesDictionnary.put(1, new Image(EnumImage.OBSTACLE2.toString()));
+//        obstaclesDictionnary.put(0, new Image(EnumImage.OBSTACLE1.toString()));
+//        obstaclesDictionnary.put(1, new Image(EnumImage.OBSTACLE2.toString()));
+        obstaclesDictionnary.put(0, new Image(EnumImage.OBSTACLE6.toString()));
     }
 
     /**
@@ -37,7 +38,7 @@ public class ResourcesUtils {
      */
     public Image getObstacle(){
         Random random = new Random();
-        return obstaclesDictionnary.get(random.nextInt(2) % 2);
+        return obstaclesDictionnary.get(random.nextInt(obstaclesDictionnary.size()));
     }
 
     /**
@@ -61,7 +62,7 @@ public class ResourcesUtils {
 
         CircularQueue<ImagePattern> circularQueue = new CircularQueue<>(4);
         String path;
-        for (int i = 1; i < 5; i++){
+        for (int i = 1; i <= 10; i++){
             path = uri + "/walk" + i + ".png";
             circularQueue.add(new ImagePattern(new Image(path)));
         }

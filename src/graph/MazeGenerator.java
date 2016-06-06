@@ -1,57 +1,194 @@
 package graph;
 
+import element.Location;
 import element.MapElement;
 import sample.Controller;
 import utils.ResourcesUtils;
 
-import java.util.List;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by Dimitri on 24/05/2016.
  */
 public class MazeGenerator {
-    public static void basicMaze() {
-        List<MapElement> obstaclesList = Controller.graph.getObstaclesList();
+
+    /**
+     * RECURCIVE DIVISION
+     */
+    public static void recurciveDivision()
+    {
+
         int columns = Controller.graph.getColumns();
         int lines = Controller.graph.getLines();
-        int pace = Controller.graph.getPace();
-        MapElement obstacle;
+        recurciveDivision(0,columns+1,lines,0);
 
-        if (!obstaclesList.isEmpty())
-            return;
+    }
 
-        for (int x = 2; x < lines; x *= 2) {
-            for (int y = 3; y < columns; ++y) {
-                if (y % x != 0) {
-                    obstacle = new MapElement(x * pace, y * pace, pace, ResourcesUtils.getInstance().getObstacle());
-                    obstaclesList.add(obstacle);
-                }
+    public static void recurciveDivision(int left, int right, int top, int bottom)
+    {
+        int width = right-left;
+        int height = top-bottom;
+
+        if(width > 2 && height > 2){
+
+            if(width > height)
+                verticalBreak(left, right, top, bottom);
+
+            else if(height > width)
+                horizontalBreak(left, right, top, bottom);
+
+            else if(height == width){
+                Random rand = new Random();
+                boolean pickOne = rand.nextBoolean();
+
+                if(pickOne)
+                    verticalBreak(left, right, top, bottom);
+                else
+                    horizontalBreak(left, right, top, bottom);
             }
-        }
-
-        for (int y = 2; y < columns; y *= 2) {
-            for (int x = 3; x < lines; ++x) {
-                if (x % 5 == 0 || x % 5 == 1) {
-                    obstacle = new MapElement(x * pace, y * pace, pace, ResourcesUtils.getInstance().getObstacle());
-                    obstaclesList.add(obstacle);
-                }
-            }
+        }else if(width > 2 && height <=2){
+            verticalBreak(left, right, top, bottom);
+        }else if(width <=2 && height > 2){
+            horizontalBreak(left, right, top, bottom);
         }
     }
 
-    public static void exampleMaze(){
+
+    public static void verticalBreak(int left, int right, int top, int bottom)
+    {
+
         List<MapElement> obstaclesList = Controller.graph.getObstaclesList();
-        int columns = Controller.graph.getColumns();
-        int lines = Controller.graph.getLines();
         int pace = Controller.graph.getPace();
         MapElement obstacle;
+        Random rand = new Random();
 
-        for (int y = 0; y < columns; ++y)
-            for (int x = 0; x < lines; ++x){
-                obstacle = new MapElement(x * pace, y * pace, pace, ResourcesUtils.getInstance().getObstacle());
+        int pivot = rand.nextInt((right-left-1)/2)*2 +  left + 2;
 
-                if (x % 2 == 0 && y % 2 == 0)
-                    obstaclesList.add(obstacle);
-            }
+
+        for(int i=bottom; i<top; i++){
+            obstacle = new MapElement( pace*i, pivot*pace, pace, ResourcesUtils.getInstance().getObstacle());
+            obstaclesList.add(obstacle);
+
+        }
+
+        int breakWall =rand.nextInt((top-bottom)/2) * 2 + 1 + bottom;
+
+        obstaclesList.remove(new Location(breakWall*pace,pivot*pace));
+
+        recurciveDivision(left, pivot, top, bottom);
+        recurciveDivision(pivot, right, top, bottom);
     }
+
+    public static void horizontalBreak(int left, int right, int top, int bottom)
+    {
+        List<MapElement> obstaclesList = Controller.graph.getObstaclesList();
+        int pace = Controller.graph.getPace();
+        MapElement obstacle;
+        Random rand = new Random();
+
+        int pivot =  bottom  + 2 + rand.nextInt((top-bottom-1)/2)*2;
+        if(pivot%2 == 1)
+            pivot++;
+
+        for(int i=left; i<right; i++){
+            obstacle = new MapElement( pace*pivot, i*pace, pace, ResourcesUtils.getInstance().getObstacle());
+            obstaclesList.add(obstacle);
+
+        }
+
+        int breakWall = left + rand.nextInt((right-left)/2) * 2 + 1;
+        obstaclesList.remove(new Location(pivot*pace,breakWall*pace));
+
+        recurciveDivision(left, right, top, pivot);
+        recurciveDivision(left, right, pivot, bottom);
+    }
+
+
+
+
+
+    /**
+     * DFS MAZE
+     */
+    public static void dfsMaze(){
+        Stack<Vertex> stack = new Stack<>();
+        Controller.graph.getObstaclesList().clear();
+        Controller.graph.initForGeneration();
+
+        Vertex start = Controller.graph.getRandomVertex();
+        dfsMaze(start, stack);
+    }
+
+    public static void dfsMaze(Vertex vertex, Stack<Vertex> stack){
+        stack.add(vertex);
+        Controller.graph.getObstaclesList().remove(vertex);
+        vertex.visited = true;
+
+        Vertex randomNeighbor = dfsGetRandomNeighbor(vertex, stack);
+        if (randomNeighbor == null) return;
+
+        dfsMaze(randomNeighbor, stack);
+    }
+
+    public static Vertex dfsGetRandomNeighbor(Vertex vertex, Stack<Vertex> stack){
+        Vertex randomNeighbor;
+        Vertex current = vertex;
+
+        while ((randomNeighbor = dfsGetRandomNeighbor(current)) == null){
+            if (stack.isEmpty()) return null;
+            current = stack.pop();
+        }
+
+        dfsBreakWall(current, randomNeighbor);
+
+        return randomNeighbor;
+    }
+
+    public static Vertex dfsGetRandomNeighbor(Vertex location){
+        int pace = Controller.graph.getPace();
+        Random random = new Random();
+        ArrayList<Vertex> neighbors;
+
+        neighbors = new ArrayList<>();
+        neighbors.add(Controller.graph.getVertexByLocation(location.getX() + 2 * pace, location.getY()));
+        neighbors.add(Controller.graph.getVertexByLocation(location.getX() - 2 * pace, location.getY()));
+        neighbors.add(Controller.graph.getVertexByLocation(location.getX(), location.getY() + 2 * pace));
+        neighbors.add(Controller.graph.getVertexByLocation(location.getX(), location.getY() - 2 * pace));
+
+        ArrayList<Vertex> vertexesToRemove = new ArrayList<>();
+        for (Vertex neighbor : neighbors){
+            if (neighbor == null || neighbor.visited)
+                vertexesToRemove.add(neighbor);
+        }
+
+        for (Vertex toRemove : vertexesToRemove)
+            neighbors.remove(toRemove);
+
+        if (neighbors.isEmpty()) return null;
+
+        int rand = random.nextInt(neighbors.size());
+        return neighbors.get(rand);
+    }
+
+    public static void dfsBreakWall(Vertex v1, Vertex v2){
+        int x = v1.getX();
+        int y = v1.getY();
+
+        if (v1.getX() < v2.getX() && v1.getY() == v2.getY())
+            x += Controller.graph.getPace();
+        else if (v1.getX() == v2.getX() && v1.getY() < v2.getY())
+            y += Controller.graph.getPace();
+        else if (v1.getX() > v2.getX() && v1.getY() == v2.getY())
+            x -= Controller.graph.getPace();
+        else if (v1.getX() == v2.getX() && v1.getY() > v2.getY())
+            y -= Controller.graph.getPace();
+
+        Controller.graph.getObstaclesList().remove(new Location(x, y));
+        Controller.graph.getObstaclesList().remove(v1.getLocation());
+        Controller.graph.getObstaclesList().remove(v2.getLocation());
+    }
+    /**
+     * END DFS MAZE
+     */
 }

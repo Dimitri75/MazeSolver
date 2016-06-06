@@ -6,10 +6,10 @@ import enumerations.EnumPosition;
 import enumerations.EnumSprite;
 import graph.Graph;
 import graph.Vertex;
-import javafx.animation.AnimationTimer;
 import javafx.application.Platform;
+import javafx.scene.paint.Color;
 import sample.Controller;
-import sample.TimersHandler;
+import utils.TimersHandler;
 import utils.AnimationHandler;
 
 import java.util.List;
@@ -20,10 +20,12 @@ import java.util.TimerTask;
  */
 public class Character extends MapElement implements Runnable {
     private EnumPosition enumPosition;
-    private List<Vertex> path;
+    public List<Vertex> path;
     private boolean actionDone;
     private EnumSprite enumSprite;
     private AnimationHandler animationHandler;
+    private boolean isAnimated = false;
+    public static Controller controller;
 
     public Character(int x, int y, int shapeSize, EnumImage image, EnumSprite enumSprite) {
         super(x, y, shapeSize, image);
@@ -101,6 +103,8 @@ public class Character extends MapElement implements Runnable {
             actionDone = false;
             for (Vertex vertex : path) {
                 if (!actionDone) {
+                    if (!isAnimated) animate();
+
                     try {
                         Thread.sleep(300);
                     } catch (InterruptedException e) {
@@ -128,6 +132,7 @@ public class Character extends MapElement implements Runnable {
             animationHandler.cancel();
         }
 
+        isAnimated = true;
         animationHandler = new AnimationHandler(this, enumSprite);
         animationHandler.scheduleAtFixedRate(new TimerTask() {
             @Override
@@ -135,7 +140,7 @@ public class Character extends MapElement implements Runnable {
                 if (animationHandler != null)
                     animationHandler.changeFrame();
             }
-        }, 0, 150);
+        }, 0, 100);
     }
 
     /**
@@ -145,5 +150,6 @@ public class Character extends MapElement implements Runnable {
         TimersHandler.cancelTimer(animationHandler);
         Thread.currentThread().interrupt();
         animationHandler = null;
+        isAnimated = false;
     }
 }

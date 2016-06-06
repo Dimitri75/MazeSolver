@@ -4,12 +4,16 @@ package enumerations;
  * Created by Dimitri on 01/11/2015.
  */
 public enum EnumImage {
-    PANDA("images/panda.png"),
-    RACCOON("images/raccoon.png"),
+    AGENT("images/agent.png"),
 
-    OBSTACLE("images/obstacle.png"),
     OBSTACLE1("images/obstacle1.png"),
     OBSTACLE2("images/obstacle2.png"),
+    OBSTACLE3("images/obstacle3.png"),
+    OBSTACLE4("images/obstacle4.png"),
+    OBSTACLE5("images/obstacle5.png"),
+    OBSTACLE6("images/obstacle6.png"),
+    OBSTACLE7("images/obstacle7.png"),
+
 
     EXIT_CLOSED("images/door_closed.png"),
     EXIT_OPENED("images/door_opened.png");
