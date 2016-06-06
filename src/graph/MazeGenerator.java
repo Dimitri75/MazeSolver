@@ -4,8 +4,6 @@ import element.Location;
 import element.MapElement;
 import sample.Controller;
 import utils.ResourcesUtils;
-
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -26,7 +24,7 @@ public class MazeGenerator {
         recursiveDivision(0, columns + 1, lines, 0);
     }
 
-    public static void recursiveDivision(int left, int right, int top, int bottom){
+    private static void recursiveDivision(int left, int right, int top, int bottom){
         int width = right - left;
         int height = top - bottom;
 
@@ -38,7 +36,7 @@ public class MazeGenerator {
         }
     }
 
-    public static void verticalBreak(int left, int right, int top, int bottom){
+    private static void verticalBreak(int left, int right, int top, int bottom){
         List<MapElement> obstaclesList = Controller.graph.getObstaclesList();
         int pace = Controller.graph.getPace();
         MapElement obstacle;
@@ -57,7 +55,7 @@ public class MazeGenerator {
     }
 
 
-    public static void horizontalBreak(int left, int right, int top, int bottom){
+    private static void horizontalBreak(int left, int right, int top, int bottom){
         List<MapElement> obstaclesList = Controller.graph.getObstaclesList();
         int pace = Controller.graph.getPace();
         MapElement obstacle;
@@ -99,7 +97,7 @@ public class MazeGenerator {
         } while ((vertex = dfsGetRandomNeighborsAndBreakWalls(vertex, stack)) != null);
     }
 
-    public static Vertex dfsGetRandomNeighborsAndBreakWalls(Vertex vertex, Stack<Vertex> stack){
+    private static Vertex dfsGetRandomNeighborsAndBreakWalls(Vertex vertex, Stack<Vertex> stack){
         Vertex randomNeighbor;
         Vertex current = vertex;
 
@@ -119,7 +117,7 @@ public class MazeGenerator {
      * @param location
      * @return
      */
-    public static Vertex dfsGetRandomNeighbors(Vertex location){
+    private static Vertex dfsGetRandomNeighbors(Vertex location){
         int pace = Controller.graph.getPace();
         Random random = new Random();
         ArrayList<Vertex> neighbors;
@@ -147,7 +145,7 @@ public class MazeGenerator {
      * @param v1
      * @param v2
      */
-    public static void dfsBreakWall(Vertex v1, Vertex v2){
+    private static void dfsBreakWall(Vertex v1, Vertex v2){
         int x = v1.getX();
         int y = v1.getY();
 

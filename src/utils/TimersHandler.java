@@ -27,13 +27,11 @@ public class TimersHandler {
             @Override
             public void run() {
                 Platform.runLater(() -> {
-                    if (Controller.agent.isActionDone()) {
+                    if (Controller.agent != null && Controller.agent.isActionDone()) {
                         cancelTimer(timer);
                         Controller.agent.stopAnimation();
-
                         controller.removeAgentFromMap();
                         Controller.exit.changeImage(EnumImage.EXIT_CLOSED);
-
                         controller.disableButtons(false, controller.button_start, controller.button_restart);
                     }
                 });
@@ -94,5 +92,10 @@ public class TimersHandler {
                 timer.cancel();
             }
         }
+    }
+
+    public static void cancelAll(){
+        cancelTimer(timer, timerBrowser, debugTimer);
+        stopMovements();
     }
 }

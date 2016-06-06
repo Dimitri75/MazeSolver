@@ -30,6 +30,8 @@ public class Controller {
     @FXML
     private VBox vbox_options;
     @FXML
+    private ComboBox maze_comboBox;
+    @FXML
     private Label label_error;
     @FXML
     public AnchorPane anchorPane;
@@ -51,17 +53,16 @@ public class Controller {
 
     @FXML
     public void start() {
-        TimersHandler.controller = this;
-        Character.controller = this;
-
         clear();
         initMap();
 
+        TimersHandler.controller = this;
+        Character.controller = this;
         mode = checkbox_debug.isSelected() ? EnumMode.DEBUG : EnumMode.NORMAL;
-
-        displayButtons(true, button_start_dijkstra, button_start_astar);
         vbox_options.setDisable(true);
         button_restart.setDisable(false);
+
+        displayButtons(true, button_start_dijkstra, button_start_astar);
         started = true;
         launched = false;
     }
@@ -166,8 +167,17 @@ public class Controller {
      * Place obstacles around the map according to the size of it
      */
     public void initObstacles() {
-        // MazeGenerator.dfsMaze();
-        MazeGenerator.recursiveDivision();
+        switch (maze_comboBox.getValue().toString()){
+            case "DFS" :
+                MazeGenerator.dfsMaze();
+                break;
+            case "Recursive Division" :
+                MazeGenerator.recursiveDivision();
+                break;
+            default :
+                MazeGenerator.dfsMaze();
+                break;
+        }
 
         for (MapElement obstacle : graph.getObstaclesList())
             anchorPane.getChildren().add(obstacle.getShape());
@@ -227,24 +237,24 @@ public class Controller {
      * Cancel timers and clean GUI
      */
     public void clear(){
-        clearLocations();
-        TimersHandler.cancelTimer(TimersHandler.timer, TimersHandler.timerBrowser, TimersHandler.debugTimer);
-        TimersHandler.stopMovements();
-
+        TimersHandler.cancelAll();
         label_error.setText("");
-
         removeAgentFromMap();
-
-        if (exit != null) {
-            anchorPane.getChildren().remove(exit.getShape());
-            exit = null;
-        }
+        removeExitFromMap();
+        clearLocations();
     }
 
     public void removeAgentFromMap(){
         if (agent != null) {
             anchorPane.getChildren().remove(agent.getShape());
             agent = null;
+        }
+    }
+
+    public void removeExitFromMap(){
+        if (exit != null) {
+            anchorPane.getChildren().remove(exit.getShape());
+            exit = null;
         }
     }
 
@@ -300,6 +310,7 @@ public class Controller {
         if (pathFound) {
             colorPath(agent.path);
             replaceElementsOnTop(exit.getShape(), agent.getShape());
+            disableButtons(false, button_start, button_restart);
 
             agentThread = new Thread(agent);
             TimersHandler.startGlobalTimer();
@@ -310,11 +321,7 @@ public class Controller {
     }
 
     /**
-<<<<<<< HEAD
-     * Replace elements on top the scene by removing and readding them
-=======
      * Replace elements on top the scene by removing and reading them
->>>>>>> origin/master
      * @param shapes
      */
     public void replaceElementsOnTop(Shape... shapes){
