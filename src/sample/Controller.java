@@ -167,8 +167,11 @@ public class Controller {
      */
     public void initObstacles() {
         //MazeGenerator.basicMaze();
+
       // MazeGenerator.dfsMaze();
         MazeGenerator.recurciveDivision();
+     //   MazeGenerator.dfsMaze();
+
 
         for (MapElement obstacle : graph.getObstaclesList())
             anchorPane.getChildren().add(obstacle.getShape());
@@ -311,7 +314,11 @@ public class Controller {
     }
 
     /**
+<<<<<<< HEAD
      * Replace elements on top the scene by removing and readding them
+=======
+     * Replace elements on top the scene by removing and reading them
+>>>>>>> origin/master
      * @param shapes
      */
     public void replaceElementsOnTop(Shape... shapes){
