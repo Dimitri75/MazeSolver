@@ -1,5 +1,7 @@
 package utils;
 
+import element.Location;
+import element.MapElement;
 import enumerations.EnumImage;
 import enumerations.EnumMode;
 import javafx.application.Platform;
@@ -14,7 +16,7 @@ import java.util.TimerTask;
  */
 public class TimersHandler {
     public static Controller controller;
-    public static Timer timer, timerBrowser, debugTimer;
+    public static Timer timer, timerBrowser, debugTimer, mazeGenerationTimer;
 
     /**
      * Global timer which stops animation when the agent is done
@@ -70,7 +72,6 @@ public class TimersHandler {
             }
         }, 0, 10);
     }
-
 
     /**
      * Cancels agent animation

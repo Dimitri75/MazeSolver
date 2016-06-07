@@ -12,6 +12,10 @@ import javafx.util.Duration;
 public class MapElement extends Location {
     private Rectangle shape;
 
+    public MapElement(Location location){
+        super(location.getX(), location.getY());
+    }
+
     public MapElement(int x, int y, int shapeSize, EnumImage image) {
         super(x, y);
         shape = new Rectangle(shapeSize, shapeSize);

@@ -47,6 +47,7 @@ public class Controller {
     public static Thread agentThread;
     public static List<Rectangle> markedLocations = new ArrayList<>();
     public static LinkedList<Rectangle> locationsToMark = new LinkedList<>();
+    public static LinkedList<Location> obstaclesToRemove = new LinkedList<>();
     private static Color lastColor;
 
     public Controller() {
@@ -65,14 +66,14 @@ public class Controller {
 
     @FXML
     public void start() {
-        clear();
-        initMap();
-
         TimersHandler.controller = this;
         Character.controller = this;
         mode = checkbox_debug.isSelected() ? EnumMode.DEBUG : EnumMode.NORMAL;
         vbox_options.setDisable(true);
         button_restart.setDisable(false);
+
+        clear();
+        initMap();
 
         displayButtons(true, button_start_dijkstra, button_start_astar);
         showInstructions(false);

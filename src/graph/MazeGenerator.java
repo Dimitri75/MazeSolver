@@ -4,10 +4,9 @@ import element.Location;
 import element.MapElement;
 import sample.Controller;
 import utils.ResourcesUtils;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Stack;
+import utils.TimersHandler;
+
+import java.util.*;
 
 
 /**
@@ -22,6 +21,10 @@ public class MazeGenerator {
         int columns = Controller.graph.getColumns();
         int lines = Controller.graph.getLines();
         recursiveDivision(0, columns, lines, 0);
+
+        Controller.graph.getObstaclesList().add(
+                new MapElement(1 , 1, Controller.graph.getPace(), ResourcesUtils.getInstance().getObstacleImage()
+        ));
     }
 
     private static void recursiveDivision(int left, int right, int top, int bottom){
@@ -89,12 +92,13 @@ public class MazeGenerator {
 
         Vertex start = Controller.graph.getRandomVertex();
 
-        Vertex vertex = start;
+        Vertex current = start;
         do {
-            stack.add(vertex);
-            Controller.graph.getObstaclesList().remove(vertex);
-            vertex.visited = true;
-        } while ((vertex = dfsGetRandomNeighborsAndBreakWalls(vertex, stack)) != null);
+            stack.add(current);
+            Controller.graph.getObstaclesList().remove(current);
+            current.visited = true;
+            current = dfsGetRandomNeighborsAndBreakWalls(current, stack);
+        } while (current != null);
     }
 
     private static Vertex dfsGetRandomNeighborsAndBreakWalls(Vertex vertex, Stack<Vertex> stack){
