@@ -4,7 +4,6 @@ import element.Location;
 import element.MapElement;
 import sample.Controller;
 import utils.ResourcesUtils;
-import utils.TimersHandler;
 
 import java.util.*;
 
@@ -150,6 +149,92 @@ public class MazeGenerator {
      * @param v2
      */
     private static void dfsBreakWall(Vertex v1, Vertex v2){
+        Location location = getLocationInBetween(v1, v2);
+
+        Controller.graph.getObstaclesList().remove(v1.getLocation());
+        Controller.graph.getObstaclesList().remove(location);
+        Controller.graph.getObstaclesList().remove(v2.getLocation());
+    }
+    /**
+     * END DFS MAZE
+     */
+
+
+
+    /**
+     * PRIM'S ALGORITHM
+     * http://stackoverflow.com/questions/29739751/implementing-a-randomly-generated-maze-using-prims-algorithm
+     */
+    public static void primsMaze(){
+        List<Vertex> frontiersList = new ArrayList<>();
+
+        //A Grid consists of a 2 dimensional array of cells.
+        //A Cell has 2 states: Blocked or Passage.
+        //Start with a Grid full of Cells in state Blocked.
+        Controller.graph.getObstaclesList().clear();
+        Controller.graph.initForGeneration();
+
+        //Pick a random Cell, set it to state Passage and Compute its frontier cells.
+        //A frontier cell of a Cell is a cell with distance 2 in state Blocked and within the grid.
+        Vertex cell = Controller.graph.getRandomVertex();
+        Controller.graph.getObstaclesList().remove(cell.getLocation());
+        computeFrontiers(cell, frontiersList);
+
+
+        //While the list of frontier cells is not empty:
+        while (!frontiersList.isEmpty()) {
+            //Pick a random frontier cell from the list of frontier cells.
+            int randomIndex = new Random().nextInt(frontiersList.size());
+            Vertex frontier = frontiersList.get(randomIndex);
+
+            //Let neighbors(frontierCell) = All cells in distance 2 in state Passage. Pick a random neighbor
+            Vertex neighbor = pickRandomNeighbor(frontier);
+
+            //connect the frontier cell with the neighbor by setting the cell in-between to state Passage.
+            primsBreakWall(frontier, neighbor);
+
+            //Compute the frontier cells of the chosen frontier cell and add them to the frontier list.
+            computeFrontiers(frontier, frontiersList);
+
+            //Remove the chosen frontier cell from the list of frontier cells.
+            frontiersList.remove(frontier);
+        }
+
+    }
+
+    /**
+     * Pick a random neighbor
+     * @param vertex
+     * @return
+     */
+    private static Vertex pickRandomNeighbor(Vertex vertex){
+        List<Vertex> neighbors = getNeighbors(vertex);
+        for (Vertex wall : neighbors)
+            Controller.graph.getObstaclesList().remove(wall);
+
+        return neighbors.get(new Random().nextInt(neighbors.size()));
+    }
+
+
+    /**
+     * Break wall in between
+     * @param v1
+     * @param v2
+     */
+    private static void primsBreakWall(Vertex v1, Vertex v2){
+        Location location = getLocationInBetween(v1, v2);
+        Controller.graph.getObstaclesList().remove(location);
+        Controller.graph.getObstaclesList().remove(v1.getLocation());
+        Controller.graph.getObstaclesList().remove(v2.getLocation());
+    }
+
+    /**
+     * Returns the location between two vertices
+     * @param v1
+     * @param v2
+     * @return
+     */
+    private static Location getLocationInBetween(Vertex v1, Vertex v2){
         int x = v1.getX();
         int y = v1.getY();
 
@@ -162,11 +247,42 @@ public class MazeGenerator {
         else if (v1.getX() == v2.getX() && v1.getY() > v2.getY())
             y -= Controller.graph.getPace();
 
-        Controller.graph.getObstaclesList().remove(new Location(x, y));
-        Controller.graph.getObstaclesList().remove(v1.getLocation());
-        Controller.graph.getObstaclesList().remove(v2.getLocation());
+        return new Location(x, y);
     }
+
     /**
-     * END DFS MAZE
+     * Add frontiers of a cell to the set
+     * @param vertex
+     * @param frontiersList
      */
+    private static void computeFrontiers(Vertex vertex, List frontiersList){
+        for (Vertex wall : getNeighbors(vertex))
+            if (Controller.graph.getObstaclesList().contains(wall.getLocation()) && !frontiersList.contains(wall))
+                frontiersList.add(wall);
+    }
+
+
+    /**
+     * Returns the neihbors list of the given vertex
+     * @param vertex
+     * @return
+     */
+    private static List<Vertex> getNeighbors(Vertex vertex){
+        List<Vertex> wallsToReturn = new ArrayList<>();
+
+        int pace = Controller.graph.getPace();
+        Location location = vertex.getLocation();
+
+        Vertex[] walls = new Vertex[4];
+        walls[0] = Controller.graph.getVertexByLocation(location.getX() + 2 * pace, location.getY());
+        walls[1] = Controller.graph.getVertexByLocation(location.getX() - 2 * pace, location.getY());
+        walls[2] = Controller.graph.getVertexByLocation(location.getX(), location.getY() + 2 * pace);
+        walls[3] = Controller.graph.getVertexByLocation(location.getX(), location.getY() - 2 * pace);
+
+        for (Vertex wall : walls)
+            if (wall != null)
+                wallsToReturn.add(wall);
+
+        return wallsToReturn;
+    }
 }

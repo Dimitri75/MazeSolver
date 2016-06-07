@@ -245,6 +245,10 @@ public class Graph {
             path.add(vertex);
 
         Collections.reverse(path);
+
+        if (!path.contains(destination) || !path.contains(start))
+            return null;
+
         return path;
     }
 
