@@ -17,6 +17,7 @@ public class Vertex implements ILocation, Comparable<Vertex> {
 	private double minDistance = Double.POSITIVE_INFINITY;
 	private ArrayList<Edge> adjacencies;
 	public boolean visited;
+	public Vertex pathParent;
 
 	public Vertex(int x, int y) {
 		this.x = x;

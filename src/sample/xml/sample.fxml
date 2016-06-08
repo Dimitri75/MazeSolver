@@ -67,6 +67,11 @@
                                 <Insets left="5.0" />
                             </HBox.margin>
                         </Button>
+                        <Button fx:id="button_start_bfs" onAction="#start_bfs" prefHeight="65.0" prefWidth="225.0" text="Solve the maze using BFS" textAlignment="CENTER" textOverrun="CLIP" visible="false" wrapText="true">
+                            <HBox.margin>
+                                <Insets left="5.0" />
+                            </HBox.margin>
+                        </Button>
                     </children>
                 </HBox>
             </items>

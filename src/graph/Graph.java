@@ -201,6 +201,25 @@ public class Graph {
         return getShortestPath(start, destination);
     }
 
+
+    public List<Vertex> bfs(Vertex start, Vertex destination, EnumMode mode) {
+        if (!listVertex.contains(start) || !listVertex.contains(destination))
+            return null;
+
+        Color debugColor = EnumColor.getColorAt(-1);
+        PriorityQueue<Vertex> vertexQueue = computePaths(start);
+
+        while (!vertexQueue.isEmpty()) {
+            Vertex current = vertexQueue.poll();
+            colorifyLocation(mode, current, debugColor);
+
+            workForAdjacencies(current, start, vertexQueue);
+        }
+        vertexQueue.clear();
+
+        return bfsPath(start, destination);
+    }
+
     public PriorityQueue<Vertex> computePaths(Vertex start){
         reinitVertices();
         start.setMinDistance(0.);
@@ -237,6 +256,45 @@ public class Graph {
             return null;
 
         return path;
+    }
+
+    private List<Vertex> constructPath(Vertex node) {
+        LinkedList path = new LinkedList();
+        while (node.pathParent != null) {
+            path.addFirst(node);
+            node = node.pathParent;
+        }
+        return path;
+    }
+
+    public List<Vertex> bfsPath(Vertex start, Vertex destination) {
+
+        LinkedList closedList = new LinkedList();
+        LinkedList openList = new LinkedList();
+
+        openList.add(start);
+
+        start.pathParent = null;
+
+        while (!openList.isEmpty()) {
+            Vertex n = (Vertex)openList.removeFirst();
+            if (n == destination) {
+                return constructPath(destination);
+            }
+            else {
+                closedList.add(n);
+                Iterator i = n.getNeighbors().iterator();
+                while (i.hasNext()) {
+                    Vertex neighbor = (Vertex)i.next();
+                    if (!closedList.contains(neighbor) && !openList.contains(neighbor))
+                    {
+                        neighbor.pathParent = n;
+                        openList.add(neighbor);
+                    }
+                }
+            }
+        }
+        return null;
     }
 
     public Vertex multipleBFS(EnumMode mode, Vertex... vertex) {

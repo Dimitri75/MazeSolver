@@ -24,7 +24,7 @@ public class Controller {
     @FXML
     private Slider slider_size;
     @FXML
-    public Button button_start, button_restart, button_start_dijkstra, button_start_astar;
+    public Button button_start, button_restart, button_start_dijkstra, button_start_astar, button_start_bfs;
     @FXML
     private CheckBox checkbox_debug;
     @FXML
@@ -75,7 +75,7 @@ public class Controller {
         clear();
         initMap();
 
-        displayButtons(true, button_start_dijkstra, button_start_astar);
+        displayButtons(true, button_start_dijkstra, button_start_astar, button_start_bfs);
         showInstructions(false);
         started = true;
         launched = false;
@@ -84,7 +84,7 @@ public class Controller {
     @FXML
     public void restart(){
         clearAll();
-        displayButtons(false, button_start_dijkstra, button_start_astar);
+        displayButtons(false, button_start_dijkstra, button_start_astar, button_start_bfs);
         vbox_options.setDisable(false);
         button_restart.setDisable(true);
 
@@ -95,7 +95,7 @@ public class Controller {
 
     @FXML
     public void start_dijkstra() {
-        displayButtons(false, button_start_dijkstra, button_start_astar);
+        displayButtons(false, button_start_dijkstra, button_start_astar, button_start_bfs);
         disableButtons(true, button_start, button_restart);
 
         agentRunsDijkstra(graph.getVertexByLocation(exit.getX(), exit.getY()), mode);
@@ -104,10 +104,19 @@ public class Controller {
 
     @FXML
     public void start_astar() {
-        displayButtons(false, button_start_dijkstra, button_start_astar);
+        displayButtons(false, button_start_dijkstra, button_start_astar, button_start_bfs);
         disableButtons(true, button_start, button_restart);
 
         agentRunsAStar(graph.getVertexByLocation(exit.getX(), exit.getY()), mode);
+        launched = true;
+    }
+
+    @FXML
+    public void start_bfs() {
+        displayButtons(false, button_start_dijkstra, button_start_astar, button_start_bfs);
+        disableButtons(true, button_start, button_restart);
+
+        agentRunsBFS(graph.getVertexByLocation(exit.getX(), exit.getY()), mode);
         launched = true;
     }
 
@@ -315,6 +324,17 @@ public class Controller {
 
         Vertex agentVertex = graph.getVertexByLocation(agent.getX(), agent.getY());
         pathFound = agent.initPathAStar(graph, agentVertex, destination, mode);
+
+        // The debug timer will starts the simulation after being done
+        TimersHandler.startDebugTimer();
+    }
+
+    public void agentRunsBFS(Vertex destination, EnumMode mode){
+        if (agentThread != null)
+            agentThread.interrupt();
+
+        Vertex agentVertex = graph.getVertexByLocation(agent.getX(), agent.getY());
+        pathFound = agent.initPathBFS(graph, agentVertex, destination, mode);
 
         // The debug timer will starts the simulation after being done
         TimersHandler.startDebugTimer();
