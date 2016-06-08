@@ -5,7 +5,7 @@ import interfaces.ILocation;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
+
 import java.util.Map;
 
 /**
@@ -25,6 +25,17 @@ public class Vertex implements ILocation, Comparable<Vertex> {
 		adjacencies = new ArrayList<>();
 		visited = false;
 	}
+
+	public double getCost(Vertex node){
+		return cost;
+	}
+
+
+		double euclidienne = sqrt(dx*dx+dy*dy);
+		return euclidienne;
+	}
+
+
 
 	public ArrayList<Edge> getAdjacencies(){
 		return adjacencies;

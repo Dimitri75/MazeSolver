@@ -201,6 +201,48 @@ public class Graph {
         return getShortestPath(start, destination);
     }
 
+    public List<Vertex> astarPath(Vertex start, Vertex destination) {
+
+        LinkedList<Vertex> openList = new LinkedList();
+        LinkedList<Vertex> closedList = new LinkedList();
+
+        start.cost = 0;
+        start.estimatedCost = start.distanceEuclidienne(start,destination);
+        start.pathParent = null;
+        openList.add(start);
+
+        while (!openList.isEmpty()) {
+            Vertex n = openList.removeFirst();
+            if (n == destination) {
+                return constructPath(destination);
+            }
+
+            List<Vertex> neighborsList = n.getNeighbors();
+            for (int i=0; i<neighborsList.size(); i++) {
+                Vertex neighbor = neighborsList.get(i);
+                boolean isContainsOpenList = openList.contains(neighbor);
+                boolean isContainsClosedList = closedList.contains(neighbor);
+                double costStart = n.cost + n.getCost(neighbor);
+
+                if ((!isContainsOpenList && !isContainsClosedList) || costStart < neighbor.cost) {
+                    neighbor.pathParent = n;
+                    neighbor.cost = costStart;
+                    neighbor.estimatedCost = neighbor.distanceEuclidienne(neighbor,destination);
+                    if (isContainsClosedList) {
+                        closedList.remove(neighbor);
+                    }
+                    if (!isContainsOpenList) {
+                        openList.add(neighbor);
+                    }
+                }
+            }
+            closedList.add(n);
+        }
+
+        return null;
+    }
+
+
 
     public List<Vertex> bfs(Vertex start, Vertex destination, EnumMode mode) {
         if (!listVertex.contains(start) || !listVertex.contains(destination))
@@ -220,6 +262,24 @@ public class Graph {
         return bfsPath(start, destination);
     }
 
+    public List<Vertex> astar(Vertex start, Vertex destination, EnumMode mode) {
+        if (!listVertex.contains(start) || !listVertex.contains(destination))
+            return null;
+
+        Color debugColor = EnumColor.getColorAt(-1);
+        PriorityQueue<Vertex> vertexQueue = computePaths(start);
+
+        while (!vertexQueue.isEmpty()) {
+            Vertex current = vertexQueue.poll();
+            colorifyLocation(mode, current, debugColor);
+
+            workForAdjacencies(current, start, vertexQueue);
+        }
+        vertexQueue.clear();
+
+        return astarPath(start, destination);
+    }
+
     public PriorityQueue<Vertex> computePaths(Vertex start){
         reinitVertices();
         start.setMinDistance(0.);
@@ -229,7 +289,7 @@ public class Graph {
     }
 
     public List<Vertex> aStar(Vertex start, Vertex destination, EnumMode mode){
-        return dijkstra(start, destination, mode);
+        return astar(start, destination, mode);
     }
 
     public void workForAdjacencies(Vertex current, Vertex start, PriorityQueue vertexQueue){
