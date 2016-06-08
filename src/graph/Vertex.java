@@ -8,6 +8,9 @@ import java.util.HashMap;
 
 import java.util.Map;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.sqrt;
+
 /**
  * Created by Dimitri on 21/10/2015.
  */
@@ -18,6 +21,9 @@ public class Vertex implements ILocation, Comparable<Vertex> {
 	private ArrayList<Edge> adjacencies;
 	public boolean visited;
 	public Vertex pathParent;
+	double cost;
+	double estimatedCost;
+
 
 	public Vertex(int x, int y) {
 		this.x = x;
@@ -30,6 +36,9 @@ public class Vertex implements ILocation, Comparable<Vertex> {
 		return cost;
 	}
 
+	public double distanceEuclidienne(Vertex start, Vertex destination){
+		double dx = abs(start.getX()-destination.getX());
+		double dy = abs(start.getY()-destination.getY());
 
 		double euclidienne = sqrt(dx*dx+dy*dy);
 		return euclidienne;
