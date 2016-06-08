@@ -21,8 +21,8 @@
                          <ComboBox fx:id="maze_comboBox" prefWidth="175.0">
                                  <items>
                                      <FXCollections fx:factory="observableArrayList">
-                                         <String fx:value="DFS" />
                                          <String fx:value="Recursive Division" />
+                                         <String fx:value="DFS" />
                                      </FXCollections>
                                  </items>
                                  <value>

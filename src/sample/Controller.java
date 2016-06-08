@@ -198,7 +198,7 @@ public class Controller {
                 MazeGenerator.recursiveDivision();
                 break;
             default :
-                MazeGenerator.primsMaze();
+                //MazeGenerator.primsMaze();
                 break;
         }
 

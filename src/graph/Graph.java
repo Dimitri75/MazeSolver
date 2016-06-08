@@ -191,20 +191,20 @@ public class Graph {
             Vertex current = vertexQueue.poll();
             colorifyLocation(mode, current, debugColor);
 
-//            if (current.equals(destination))
-//                return getShortestPath(start, destination);
+            if (current.equals(destination))
+                return getShortestPath(start, destination);
 
             workForAdjacencies(current, start, vertexQueue);
         }
         vertexQueue.clear();
 
-        return getShortestPath(start, destination);
+        return null;
     }
 
-    public List<Vertex> astarPath(Vertex start, Vertex destination) {
-
+    public List<Vertex> aStar(Vertex start, Vertex destination, EnumMode mode) {
         LinkedList<Vertex> openList = new LinkedList();
         LinkedList<Vertex> closedList = new LinkedList();
+        Color debugColor = EnumColor.getColorAt(-1);
 
         start.cost = 0;
         start.estimatedCost = start.distanceEuclidienne(start,destination);
@@ -213,6 +213,7 @@ public class Graph {
 
         while (!openList.isEmpty()) {
             Vertex n = openList.removeFirst();
+            colorifyLocation(mode, n, debugColor);
             if (n == destination) {
                 return constructPath(destination);
             }
@@ -242,54 +243,12 @@ public class Graph {
         return null;
     }
 
-
-
-    public List<Vertex> bfs(Vertex start, Vertex destination, EnumMode mode) {
-        if (!listVertex.contains(start) || !listVertex.contains(destination))
-            return null;
-
-        Color debugColor = EnumColor.getColorAt(-1);
-        PriorityQueue<Vertex> vertexQueue = computePaths(start);
-
-        while (!vertexQueue.isEmpty()) {
-            Vertex current = vertexQueue.poll();
-            colorifyLocation(mode, current, debugColor);
-
-            workForAdjacencies(current, start, vertexQueue);
-        }
-        vertexQueue.clear();
-
-        return bfsPath(start, destination);
-    }
-
-    public List<Vertex> astar(Vertex start, Vertex destination, EnumMode mode) {
-        if (!listVertex.contains(start) || !listVertex.contains(destination))
-            return null;
-
-        Color debugColor = EnumColor.getColorAt(-1);
-        PriorityQueue<Vertex> vertexQueue = computePaths(start);
-
-        while (!vertexQueue.isEmpty()) {
-            Vertex current = vertexQueue.poll();
-            colorifyLocation(mode, current, debugColor);
-
-            workForAdjacencies(current, start, vertexQueue);
-        }
-        vertexQueue.clear();
-
-        return astarPath(start, destination);
-    }
-
     public PriorityQueue<Vertex> computePaths(Vertex start){
         reinitVertices();
         start.setMinDistance(0.);
         PriorityQueue<Vertex> vertexQueue = new PriorityQueue<>();
         vertexQueue.add(start);
         return vertexQueue;
-    }
-
-    public List<Vertex> aStar(Vertex start, Vertex destination, EnumMode mode){
-        return astar(start, destination, mode);
     }
 
     public void workForAdjacencies(Vertex current, Vertex start, PriorityQueue vertexQueue){
@@ -327,17 +286,18 @@ public class Graph {
         return path;
     }
 
-    public List<Vertex> bfsPath(Vertex start, Vertex destination) {
-
+    public List<Vertex> bfs(Vertex start, Vertex destination, EnumMode mode) {
         LinkedList closedList = new LinkedList();
         LinkedList openList = new LinkedList();
+        Color debugColor = EnumColor.getColorAt(-1);
 
         openList.add(start);
-
         start.pathParent = null;
 
         while (!openList.isEmpty()) {
             Vertex n = (Vertex)openList.removeFirst();
+            colorifyLocation(mode, n, debugColor);
+
             if (n == destination) {
                 return constructPath(destination);
             }
