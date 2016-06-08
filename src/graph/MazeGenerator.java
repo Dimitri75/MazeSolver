@@ -22,7 +22,7 @@ public class MazeGenerator {
         recursiveDivision(0, columns, lines, 0);
 
         Controller.graph.getObstaclesList().add(
-                new MapElement(1 , 1, Controller.graph.getPace(), ResourcesUtils.getInstance().getObstacleImage()
+                new MapElement(0 , 0, Controller.graph.getPace(), ResourcesUtils.getInstance().getObstacleImage()
         ));
     }
 
