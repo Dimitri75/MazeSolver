@@ -190,6 +190,10 @@ public class Graph {
         while (!vertexQueue.isEmpty()) {
             Vertex current = vertexQueue.poll();
             colorifyLocation(mode, current, debugColor);
+
+//            if (current.equals(destination))
+//                return getShortestPath(start, destination);
+
             workForAdjacencies(current, start, vertexQueue);
         }
         vertexQueue.clear();
@@ -206,24 +210,7 @@ public class Graph {
     }
 
     public List<Vertex> aStar(Vertex start, Vertex destination, EnumMode mode){
-        if (!listVertex.contains(start) || !listVertex.contains(destination))
-            return null;
-
-        Color debugColor = EnumColor.getColorAt(-1);
-        PriorityQueue<Vertex> vertexQueue = computePaths(start);
-
-        while (!vertexQueue.isEmpty()) {
-            Vertex current = vertexQueue.poll();
-            colorifyLocation(mode, current, debugColor);
-
-            if (current.equals(destination))
-                return getShortestPath(start, destination);
-
-            workForAdjacencies(current, start, vertexQueue);
-        }
-        vertexQueue.clear();
-
-        return null;
+        return dijkstra(start, destination, mode);
     }
 
     public void workForAdjacencies(Vertex current, Vertex start, PriorityQueue vertexQueue){
