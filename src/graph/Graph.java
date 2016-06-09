@@ -212,6 +212,12 @@ public class Graph {
         openList.add(start);
 
         while (!openList.isEmpty()) {
+            Collections.sort(openList, new Comparator<Vertex>(){
+                public int compare(Vertex v1, Vertex v2){
+                    return (int)(v1.estimatedCost - v2.estimatedCost);
+                }
+            });
+
             Vertex n = openList.removeFirst();
             colorifyLocation(mode, n, debugColor);
             if (n == destination) {
@@ -223,18 +229,25 @@ public class Graph {
                 Vertex neighbor = neighborsList.get(i);
                 boolean isContainsOpenList = openList.contains(neighbor);
                 boolean isContainsClosedList = closedList.contains(neighbor);
-                double costStart = n.cost + n.getCost(neighbor);
+                double nextCost = n.cost + n.getCost(neighbor);
 
-                if ((!isContainsOpenList && !isContainsClosedList) || costStart < neighbor.cost) {
-                    neighbor.pathParent = n;
-                    neighbor.cost = costStart;
-                    neighbor.estimatedCost = neighbor.distanceEuclidienne(neighbor,destination);
+
+                if (nextCost < neighbor.cost) {
+                    if (isContainsOpenList) {
+                        closedList.remove(neighbor);
+                    }
                     if (isContainsClosedList) {
                         closedList.remove(neighbor);
                     }
-                    if (!isContainsOpenList) {
-                        openList.add(neighbor);
-                    }
+                }
+
+
+                if (!isContainsOpenList && !isContainsClosedList)
+                {
+                    neighbor.pathParent = n;
+                    neighbor.cost = nextCost;
+                    neighbor.estimatedCost = neighbor.distanceEuclidienne(neighbor,destination);
+                    openList.add(neighbor);
                 }
             }
             closedList.add(n);
