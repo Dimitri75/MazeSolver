@@ -12,7 +12,7 @@ import static java.lang.Math.abs;
 import static java.lang.Math.sqrt;
 
 /**
- * Created by Dimitri on 21/10/2015.
+ * Created by  EquipeLabyrinthe on 21/05/2016.
  */
 public class Vertex implements ILocation, Comparable<Vertex> {
 	int x, y;

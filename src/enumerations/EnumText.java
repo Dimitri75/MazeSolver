@@ -1,7 +1,7 @@
 package enumerations;
 
 /**
- * Created by Dimitri on 06/03/2016.
+ * Created by  EquipeLabyrinthe on 06/06/2016.
  */
 public enum EnumText {
     INSTRUCTIONS(

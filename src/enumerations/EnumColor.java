@@ -5,7 +5,7 @@ import javafx.scene.paint.Color;
 import java.util.Random;
 
 /**
- * Created by Dimitri on 04/03/2016.
+ * Created by EquipeLabyrinthe on 04/06/2016.
  */
 public enum EnumColor {
     RED(Color.CRIMSON, 0),

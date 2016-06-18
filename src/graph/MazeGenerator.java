@@ -9,7 +9,7 @@ import java.util.*;
 
 
 /**
- * Created by Dimitri on 24/05/2016.
+ * Created by EquipeLabyrinthe on 24/05/2016.
  */
 public class MazeGenerator {
 
@@ -159,7 +159,47 @@ public class MazeGenerator {
      * END DFS MAZE
      */
 
+    /**
+     * KRUSKAL
+     */
+    public static void kruskalMaze()
+    {
+        Stack<Vertex> stack = new Stack<>();
+        Controller.graph.getObstaclesList().clear();
+        Controller.graph.initForGeneration();
 
+        Vertex start = Controller.graph.getRandomVertex();
+
+        Vertex current = start;
+
+        while (current != null) {
+
+            stack.add(current);
+            Controller.graph.getObstaclesList().remove(current);
+            current.visited = true;
+        }
+
+
+    }
+
+
+    /**
+     * Break wall in between
+     * @param v1
+     * @param v2
+     */
+    private static void kruskalBreakWall(Vertex v1, Vertex v2)
+    {
+        Location location = getLocationInBetween(v1, v2);
+        Controller.graph.getObstaclesList().remove(location);
+        Controller.graph.getObstaclesList().remove(v1.getLocation());
+        Controller.graph.getObstaclesList().remove(v2.getLocation());
+    }
+
+
+    /**
+     * END KRUSKAL
+     */
 
     /**
      * PRIM'S ALGORITHM
@@ -263,7 +303,7 @@ public class MazeGenerator {
 
 
     /**
-     * Returns the neihbors list of the given vertex
+     * Returns the neighbors list of the given vertex
      * @param vertex
      * @return
      */

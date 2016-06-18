@@ -1,7 +1,7 @@
 package enumerations;
 
 /**
- * Created by Dimitri on 04/03/2016.
+ * Created by  EquipeLabyrinthe on 04/06/2016.
  */
 public enum EnumMode {
     NORMAL,

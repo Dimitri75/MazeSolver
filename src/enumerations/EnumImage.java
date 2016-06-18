@@ -1,7 +1,7 @@
 package enumerations;
 
 /**
- * Created by Dimitri on 01/11/2015.
+ * Created by  EquipeLabyrinthe on 21/05/2016.
  */
 public enum EnumImage {
     AGENT("images/agent.png"),

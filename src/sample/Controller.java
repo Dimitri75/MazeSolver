@@ -1,5 +1,7 @@
 package sample;
-
+/**
+ * Created by  EquipeLabyrinthe on 21/05/2016.
+ */
 import element.Character;
 import element.Location;
 import element.MapElement;

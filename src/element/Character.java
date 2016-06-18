@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.TimerTask;
 
 /**
- * Created by Dimitri on 21/10/2015.
+ * Created by EquipeLabyrinthe on 21/05/2016.
  */
 public class Character extends MapElement implements Runnable {
     private EnumPosition enumPosition;

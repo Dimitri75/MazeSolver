@@ -9,7 +9,7 @@ import list.CircularQueue;
 import java.util.Timer;
 
 /**
- * Created by Dimitri on 03/03/2016.
+ * Created by EquipeLabyrinthe on 03/06/2016.
  */
 public class AnimationHandler extends Timer {
     Character character;

@@ -1,7 +1,7 @@
 package enumerations;
 
 /**
- * Created by Dimitri on 05/11/2015.
+ * Created by  EquipeLabyrinthe on 05/06/2016.
  */
 public enum EnumPosition {
     LEFT(0),

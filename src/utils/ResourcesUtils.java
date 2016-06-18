@@ -11,7 +11,7 @@ import java.util.HashMap;
 import java.util.Random;
 
 /**
- * Created by Dimitri on 01/11/2015.
+ * Created by  EquipeLabyrinthe on 21/05/2016.
  */
 public class ResourcesUtils {
     public static ResourcesUtils INSTANCE = null;

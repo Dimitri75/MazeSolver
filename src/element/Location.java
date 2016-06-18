@@ -3,7 +3,7 @@ package element;
 import interfaces.ILocation;
 
 /**
- * Created by Dimitri on 02/03/2016.
+ * Created by EquipeLabyrinthe on 02/06/2016.
  */
 public class Location implements ILocation {
     int x, y;

@@ -13,7 +13,7 @@ import utils.ResourcesUtils;
 import java.util.*;
 
 /**
- * Created by Dimitri on 21/10/2015.
+ * Created by  EquipeLabyrinthe on 21/05/2016.
  */
 public class Graph {
     private int pace;

@@ -1,7 +1,7 @@
 package enumerations;
 
 /**
- * Created by Dimitri on 03/03/2016.
+ * Created by  EquipeLabyrinthe on 03/06/2016.
  */
 public enum EnumSprite {
     AGENT_SPRITE("images/sprite_agent");

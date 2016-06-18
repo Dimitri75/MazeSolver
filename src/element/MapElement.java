@@ -7,7 +7,7 @@ import javafx.scene.shape.Rectangle;
 import javafx.util.Duration;
 
 /**
- * Created by Dimitri on 05/11/2015.
+ * Created by EquipeLabyrinthe on 05/06/2016.
  */
 public class MapElement extends Location {
     private Rectangle shape;

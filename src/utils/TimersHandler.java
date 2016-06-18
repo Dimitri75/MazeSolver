@@ -12,7 +12,7 @@ import java.util.Timer;
 import java.util.TimerTask;
 
 /**
- * Created by Dimitri on 2/05/2016.
+ * Created by EquipeLabyrinthe on 22/05/2016.
  */
 public class TimersHandler {
     public static Controller controller;
