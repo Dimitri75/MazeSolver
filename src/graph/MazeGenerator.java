@@ -220,7 +220,6 @@ public class MazeGenerator {
         Controller.graph.getObstaclesList().remove(cell.getLocation());
         computeFrontiers(cell, frontiersList);
 
-
         //While the list of frontier cells is not empty:
         while (!frontiersList.isEmpty()) {
             //Pick a random frontier cell from the list of frontier cells.
@@ -249,10 +248,15 @@ public class MazeGenerator {
      */
     private static Vertex pickRandomNeighbor(Vertex vertex){
         List<Vertex> neighbors = getNeighbors(vertex);
+        Vertex neighbor;
         for (Vertex wall : neighbors)
             Controller.graph.getObstaclesList().remove(wall);
 
-        return neighbors.get(new Random().nextInt(neighbors.size()));
+        neighbor =  neighbors.get(new Random().nextInt(neighbors.size()));
+        while (Controller.graph.getObstaclesList().contains(neighbor.getLocation())){
+            neighbor =  neighbors.get(new Random().nextInt(neighbors.size()));
+        }
+        return neighbor;
     }
 
 
