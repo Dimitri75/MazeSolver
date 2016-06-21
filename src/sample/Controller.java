@@ -199,6 +199,12 @@ public class Controller {
             case "Recursive Division" :
                 MazeGenerator.recursiveDivision();
                 break;
+            case "Prims":
+                MazeGenerator.primsMaze();
+                break;
+            case "Kruskal":
+                MazeGenerator.kruskalMaze();
+                break;
             default :
                 //MazeGenerator.primsMaze();
                 break;

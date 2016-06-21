@@ -23,6 +23,8 @@
                                      <FXCollections fx:factory="observableArrayList">
                                          <String fx:value="Recursive Division" />
                                          <String fx:value="DFS" />
+                                         <String fx:value="Kruskal" />
+                                         <String fx:value="Prims" />
                                      </FXCollections>
                                  </items>
                                  <value>
