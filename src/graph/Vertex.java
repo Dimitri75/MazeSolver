@@ -20,6 +20,7 @@ public class Vertex implements ILocation, Comparable<Vertex> {
 	private double minDistance = Double.POSITIVE_INFINITY;
 	private ArrayList<Edge> adjacencies;
 	public boolean visited;
+	public int id = -1; //Utilisé par kruskal
 	public Vertex pathParent;
 	double cost;
 	double estimatedCost;

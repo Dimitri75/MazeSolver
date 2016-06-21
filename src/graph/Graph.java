@@ -480,6 +480,12 @@ public class Graph {
         return listVertex.get(randIndex);
     }
 
+    public Edge getRandomEdge(){
+        Random random = new Random();
+        int randIndex = random.nextInt(listEdges.size());
+        return listEdges.get(randIndex);
+    }
+
     public int getPace() {
         return pace;
     }
@@ -507,4 +513,5 @@ public class Graph {
     public List<Vertex> getListVertices() {
         return listVertex;
     }
+    public List<Edge> getListEdges() {return listEdges;}
 }

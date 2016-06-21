@@ -8,6 +8,7 @@ import utils.ResourcesUtils;
 import java.util.*;
 
 
+
 /**
  * Created by EquipeLabyrinthe on 24/05/2016.
  */
@@ -164,24 +165,65 @@ public class MazeGenerator {
      */
     public static void kruskalMaze()
     {
-        Stack<Vertex> stack = new Stack<>();
         Controller.graph.getObstaclesList().clear();
         Controller.graph.initForGeneration();
 
-        Vertex start = Controller.graph.getRandomVertex();
+        Random rand = new Random();
 
-        Vertex current = start;
+        List<Vertex> cases = Controller.graph.getListVertices();
+        ArrayList<Edge> walls = new ArrayList<Edge>(Controller.graph.getListEdges());
 
-        while (current != null) {
-
-            stack.add(current);
-            Controller.graph.getObstaclesList().remove(current);
-            current.visited = true;
+        //Mélange l'ordre des murs
+        for (int i = 0; i < walls.size(); ++i)
+        {
+            int e1 = rand.nextInt(walls.size());
+            int e2 = rand.nextInt(walls.size());
+            Collections.swap(walls,e1,e2);
         }
 
+        //Au debut toutes les cases ont un ID différent
+        for (int i = 0; i < cases.size(); ++i)
+        {
+            cases.get(i).id = i;
+        }
 
+        while (!endKruskalGeneration(cases) && !walls.isEmpty())
+        {
+            //On tire un mur au hasard
+            Edge wall = walls.get(walls.size() - 1);
+
+            Vertex v1 = wall.getSource();
+            Vertex v2 = wall.getTarget();
+
+            kruskalChangeIDTo(cases, v1.id, v2.id);
+
+            kruskalBreakWall(v1,v2);
+
+            walls.remove(walls.size() - 1);
+        }
     }
 
+    private static boolean endKruskalGeneration( List<Vertex> cases)
+    {
+        int first_id = cases.get(0).id;
+        for (int i = 1; i < cases.size(); ++i)
+        {
+            if (cases.get(i).id != first_id) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    private static void kruskalChangeIDTo(List<Vertex> cases, int id_to_change, int new_id)
+    {
+        for (int i = 0; i < cases.size(); ++i)
+        {
+            if (cases.get(i).id == id_to_change) {
+                cases.get(i).id = new_id;
+            }
+        }
+    }
 
     /**
      * Break wall in between
