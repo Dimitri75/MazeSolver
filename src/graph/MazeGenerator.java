@@ -8,6 +8,9 @@ import utils.ResourcesUtils;
 import java.util.*;
 
 
+class KruskalEdge {
+    public Vertex v1,v2, wall;
+};
 
 /**
  * Created by EquipeLabyrinthe on 24/05/2016.
@@ -160,6 +163,8 @@ public class MazeGenerator {
      * END DFS MAZE
      */
 
+
+
     /**
      * KRUSKAL
      */
@@ -170,8 +175,41 @@ public class MazeGenerator {
 
         Random rand = new Random();
 
-        List<Vertex> cases = Controller.graph.getListVertices();
-        ArrayList<Edge> walls = new ArrayList<Edge>(Controller.graph.getListEdges());
+        List<Vertex> allcases = Controller.graph.getListVertices();
+        List<Vertex> cases = new ArrayList<Vertex>();
+        //Avec kruskal on travail sur les murs directement on va donc découper la grille en "murs" et en "cases"
+        ArrayList<KruskalEdge> walls = new ArrayList<KruskalEdge>();
+
+        int lines = Controller.graph.getLines();
+        int cols = Controller.graph.getColumns();
+
+        int pace = Controller.graph.getPace();
+        for (int y = 0; y < Controller.graph.getPixelHeight(); y += Controller.graph.getPace())
+        {
+            for (int x = 0; x < Controller.graph.getPixelWidth() ; x += Controller.graph.getPace())
+            {
+                if (x%(2*pace) == 0 && y%(2*pace) == 0)
+                {
+                    cases.add(Controller.graph.getVertexByLocation(x,y));
+                    if (x-(2*pace) >= 0)
+                    {
+                        KruskalEdge w = new KruskalEdge();
+                        w.v1 = Controller.graph.getVertexByLocation(x,y);
+                        w.v2 = Controller.graph.getVertexByLocation(x-(2*pace),y);
+                        w.wall = Controller.graph.getVertexByLocation(x-(1*pace),y);
+                        walls.add(w);
+                    }
+                    if (y-(2*pace) >= 0)
+                    {
+                        KruskalEdge w = new KruskalEdge();
+                        w.v1 = Controller.graph.getVertexByLocation(x,y);
+                        w.v2 = Controller.graph.getVertexByLocation(x,y-(2*pace));
+                        w.wall = Controller.graph.getVertexByLocation(x,y-(1*pace));
+                        walls.add(w);
+                    }
+                }
+            }
+        }
 
         //Mélange l'ordre des murs
         for (int i = 0; i < walls.size(); ++i)
@@ -185,22 +223,23 @@ public class MazeGenerator {
         for (int i = 0; i < cases.size(); ++i)
         {
             cases.get(i).id = i;
+            cases.get(i).visited = false;
+            Controller.graph.getObstaclesList().remove(cases.get(i).getLocation());
         }
 
         while (!endKruskalGeneration(cases) && !walls.isEmpty())
         {
             //On tire un mur au hasard
-            Edge wall = walls.get(walls.size() - 1);
+            KruskalEdge wall = walls.get(walls.size() - 1);
 
-            Vertex v1 = wall.getSource();
-            Vertex v2 = wall.getTarget();
+            wall.v1.visited = true; wall.v2.visited = true;
+            kruskalChangeIDTo(cases, wall.v1.id, wall.v2.id);
 
-            kruskalChangeIDTo(cases, v1.id, v2.id);
-
-            kruskalBreakWall(v1,v2);
+            kruskalBreakWall(wall);
 
             walls.remove(walls.size() - 1);
         }
+
     }
 
     private static boolean endKruskalGeneration( List<Vertex> cases)
@@ -208,6 +247,7 @@ public class MazeGenerator {
         int first_id = cases.get(0).id;
         for (int i = 1; i < cases.size(); ++i)
         {
+            //if (!cases.get(i).visited) return false;
             if (cases.get(i).id != first_id) {
                 return false;
             }
@@ -226,16 +266,11 @@ public class MazeGenerator {
     }
 
     /**
-     * Break wall in between
-     * @param v1
-     * @param v2
+     * Break wall
      */
-    private static void kruskalBreakWall(Vertex v1, Vertex v2)
+    private static void kruskalBreakWall(KruskalEdge e)
     {
-        Location location = getLocationInBetween(v1, v2);
-        Controller.graph.getObstaclesList().remove(location);
-        Controller.graph.getObstaclesList().remove(v1.getLocation());
-        Controller.graph.getObstaclesList().remove(v2.getLocation());
+        Controller.graph.getObstaclesList().remove(e.wall.getLocation());
     }
 
 
